@@ -343,6 +343,9 @@ select.f{appearance:auto}
 }
 @media print{.top,#toast,#modal{display:none}}
 
+input.code{text-transform:uppercase;letter-spacing:.14em;font-weight:600}
+input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:400}
+
 </style>
 </head>
 <body>
@@ -569,7 +572,9 @@ select.f{appearance:auto}
     } finally { clearTimeout(timer); }
   }
 
+  var THAI = /[\u0E00-\u0E7F]/;
   var ERR = {
+    thai_kb: 'แป้นพิมพ์ตอนนี้เป็นภาษาไทย — กดเปลี่ยนเป็น EN (ปุ่มตัวหนอน ` หรือ Alt+Shift) แล้วพิมพ์ใหม่',
     bad_login: 'ชื่อผู้ใช้หรือ PIN ไม่ถูกต้อง',
     bad_pin: 'PIN เดิมไม่ถูกต้อง',
     locked: 'ใส่ผิดหลายครั้ง ลองใหม่ใน 10 นาที',
@@ -577,7 +582,7 @@ select.f{appearance:auto}
     forbidden: 'ไม่มีสิทธิ์ทำรายการนี้',
     not_found: 'ไม่พบรายการนี้ (อาจถูกลบไปแล้ว)',
     already_setup: 'ตั้งค่าครั้งแรกเสร็จแล้ว ให้เข้าสู่ระบบแทน',
-    bad_setup_key: 'รหัสตั้งค่าไม่ถูกต้อง',
+    bad_setup_key: 'รหัสตั้งค่าไม่ถูกต้อง — เช็กว่าพิมพ์เป็นภาษาอังกฤษ (EN) และไม่มีช่องว่าง',
     no_setup_key: 'ในสคริปต์ยังไม่มีรหัสตั้งค่า',
     max_users: 'มีผู้ใช้ที่เปิดใช้งานครบแล้ว ปิดใช้งานคนอื่นก่อน',
     username_taken: 'ชื่อผู้ใช้นี้มีอยู่แล้ว',
@@ -707,7 +712,7 @@ select.f{appearance:auto}
     return '<div class="card lock wide"><h1>ตั้งค่าครั้งแรก</h1>' +
       '<p class="sub">สร้างบัญชีผู้ดูแลระบบ (Admin) ของคุณ แล้วค่อยเพิ่มผู้ใช้คนอื่นได้ในเมนู "ผู้ใช้"</p>' +
       '<form id="setupForm" novalidate>' +
-      '<div class="field"><label for="su-key">รหัสตั้งค่า</label><input type="password" id="su-key" autocomplete="off" maxlength="64"><div class="hint">รหัสใช้ครั้งเดียวสำหรับสร้างบัญชีแรก (ที่ได้รับตอนส่งมอบระบบ)</div></div>' +
+      '<div class="field"><label for="su-key">รหัสตั้งค่า</label><input type="text" id="su-key" class="code" name="setup-code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" data-lpignore="true" data-1p-ignore="true" placeholder="เช่น AB12CD"><div class="hint" id="su-keyhint">รหัสใช้ครั้งเดียวสำหรับสร้างบัญชีแรก (ที่ได้รับตอนส่งมอบระบบ) พิมพ์เป็นภาษาอังกฤษ ตัวพิมพ์เล็กหรือใหญ่ก็ได้</div></div>' +
       '<div class="two">' +
         '<div class="field"><label for="su-user">ชื่อผู้ใช้</label><input type="text" id="su-user" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="24" placeholder="เช่น nattira"><div class="hint">a-z ตัวเลข . _ - ใช้ตอนเข้าสู่ระบบ</div></div>' +
         '<div class="field"><label for="su-name">ชื่อที่แสดง</label><input type="text" id="su-name" autocomplete="name" maxlength="60" placeholder="เช่น Nattira Tharatoy"></div>' +
@@ -1216,6 +1221,8 @@ select.f{appearance:auto}
     var p = $('#su-pin').value, p2 = $('#su-pin2').value;
     err.textContent = '';
     if (!key) { err.textContent = 'ใส่รหัสตั้งค่าก่อน'; $('#su-key').focus(); return; }
+    if (THAI.test(key)) { err.textContent = ERR.thai_kb; $('#su-key').focus(); return; }
+    if (THAI.test(u)) { err.textContent = ERR.thai_kb; $('#su-user').focus(); return; }
     if (!/^[a-z0-9._-]{2,24}$/.test(u)) { err.textContent = ERR.bad_username; $('#su-user').focus(); return; }
     if (!nm) { err.textContent = ERR.bad_name; $('#su-name').focus(); return; }
     if (p.trim().length < 6) { err.textContent = ERR.weak_pin; $('#su-pin').focus(); return; }
@@ -1291,6 +1298,11 @@ select.f{appearance:auto}
   document.addEventListener('input', function (e) {
     var id = e.target.id;
     if (id === 'q') { ui.q = e.target.value; ui.page = 0; render(); return; }
+    if (id === 'su-key' || id === 'su-user') {
+      var bad = THAI.test(e.target.value), er = document.getElementById('su-err');
+      if (er) er.textContent = bad ? ERR.thai_kb : (er.textContent === ERR.thai_kb ? '' : er.textContent);
+      return;
+    }
     // amount follows quantity x price until someone types in the amount box
     var pre = id === 'f-qty' || id === 'f-unit' ? 'f-' : (id === 'rn-qty' || id === 'rn-unit' ? 'rn-' : '');
     if (pre) {
