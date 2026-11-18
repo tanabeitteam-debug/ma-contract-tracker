@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MA Contract Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/* MA Contract Tracker: same look as Project & Jobs Tracker. Urgency colours are always paired with a text label. */
+:root{
+  --bg:#F2F4F9; --surface:#FFFFFF; --surface-2:#EDF0F6;
+  --ink:#121A2B; --ink-2:#434D66; --ink-3:#5B6681; --line:#DCE1EB;
+  --accent:#2457D6; --accent-ink:#FFFFFF; --accent-soft:#E3EBFC;
+  --todo:#5B6681; --todo-bg:#E9ECF3; --todo-bar:#8E99B3;
+  --doing:#2457D6; --doing-bg:#E3EBFC; --doing-bar:#2457D6;
+  --review:#8A5200; --review-bg:#FFEFD0; --review-bar:#E39A1B;
+  --done:#0F6B3E; --done-bg:#DAF1E5; --done-bar:#23A064;
+  --bad:#B42323; --bad-bg:#FDE3E3; --bad-bar:#D84343; --bad-solid:#C23030;
+  --c-open:#2457D6; --c-done:#23A064;
+  --shadow:0 1px 2px rgba(18,26,43,.06),0 4px 16px rgba(18,26,43,.05);
+  --font-display:'Prompt','IBM Plex Sans Thai',system-ui,'Leelawadee UI',Tahoma,sans-serif;
+  --font-body:'IBM Plex Sans Thai','Noto Sans Thai','Leelawadee UI',system-ui,Tahoma,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1422; --surface:#161E31; --surface-2:#1D2740;
+    --ink:#E8ECF6; --ink-2:#B0BAD2; --ink-3:#8F9AB5; --line:#28324C;
+    --accent:#6C97FF; --accent-ink:#0E1422; --accent-soft:#1F2D52;
+    --todo:#A3AEC8; --todo-bg:#232C44; --todo-bar:#6B7694;
+    --doing:#7FA3FF; --doing-bg:#1F2D52; --doing-bar:#6C97FF;
+    --review:#F0B04A; --review-bg:#3A2D14; --review-bar:#E39A1B;
+    --done:#4BC98A; --done-bg:#12352A; --done-bar:#2FB473;
+    --bad:#FF8080; --bad-bg:#3E1A1E; --bad-bar:#E65C5C; --bad-solid:#C23030;
+    --c-open:#5B87F0; --c-done:#2AA366;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.25);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1422; --surface:#161E31; --surface-2:#1D2740;
+  --ink:#E8ECF6; --ink-2:#B0BAD2; --ink-3:#8F9AB5; --line:#28324C;
+  --accent:#6C97FF; --accent-ink:#0E1422; --accent-soft:#1F2D52;
+  --todo:#A3AEC8; --todo-bg:#232C44; --todo-bar:#6B7694;
+  --doing:#7FA3FF; --doing-bg:#1F2D52; --doing-bar:#6C97FF;
+  --review:#F0B04A; --review-bg:#3A2D14; --review-bar:#E39A1B;
+  --done:#4BC98A; --done-bg:#12352A; --done-bar:#2FB473;
+  --bad:#FF8080; --bad-bg:#3E1A1E; --bad-bar:#E65C5C; --bad-solid:#C23030;
+    --c-open:#5B87F0; --c-done:#2AA366;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.25);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.55 var(--font-body);-webkit-text-size-adjust:100%}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{font-family:var(--font-display);font-weight:600;line-height:1.3;text-wrap:balance}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.muted{color:var(--ink-3)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+/* top bar */
+.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.top-in{max-width:1120px;margin:0 auto;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px 24px}
+.brand{display:flex;gap:10px;align-items:center;min-width:0}
+.mark{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
+.brand-name{font-family:var(--font-display);font-weight:600;font-size:17px;line-height:1.2}
+.brand-sub{font-size:12px;color:var(--ink-3)}
+#nav{display:flex;gap:4px}
+#nav a{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-weight:500;white-space:nowrap}
+#nav a:hover{background:var(--surface-2)}
+#nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad-solid);color:#fff;font-size:11px;font-weight:600;display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+.user{display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:600;font-family:var(--font-display)}
+.user-name{font-size:14px;font-weight:500;line-height:1.2}
+.user-role{font-size:12px;color:var(--ink-3)}
+#banner:not(:empty){background:var(--review-bg);color:var(--review);padding:8px 16px;text-align:center;font-size:14px}
+
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 80px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.page-head h1{font-size:24px}
+.page-head .sub{color:var(--ink-3);font-size:14px;margin-top:2px}
+.loading{padding:48px 0;text-align:center;color:var(--ink-3)}
+/* buttons and controls */
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:9px;font-weight:500;min-height:38px;line-height:1.2}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.danger{background:var(--bad-solid);border-color:var(--bad-solid);color:#fff}
+.btn[disabled]{opacity:.6;cursor:default}
+.icon-btn{width:34px;height:34px;border-radius:8px;border:1px solid transparent;background:transparent;display:inline-grid;place-items:center;color:var(--ink-3)}
+.icon-btn:hover{background:var(--surface-2);color:var(--ink)}
+.icon-btn.del:hover{color:var(--bad)}
+input[type=text],input[type=search],input[type=date],input[type=password],select.f,textarea{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 12px;min-height:40px}
+textarea{resize:vertical;min-height:72px}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}
+.tile{position:relative;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px 14px 22px;box-shadow:var(--shadow);width:100%}
+.tile::before{content:'';position:absolute;left:0;top:12px;bottom:12px;width:4px;border-radius:0 4px 4px 0;background:var(--c)}
+.tile:hover{background:var(--surface-2)}
+.tile-num{font-family:var(--font-display);font-size:30px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile-label{font-size:14px;color:var(--ink-2)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px}
+.card-h h2{font-size:16px}
+.empty{padding:20px 8px;text-align:center;color:var(--ink-3)}
+.empty .btn{margin-top:10px}
+.opt{font-weight:400;color:var(--ink-3)}
+.seg.two{grid-template-columns:repeat(2,1fr)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.fchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px;font-size:14px;font-weight:500;color:var(--ink-2);display:inline-flex;gap:8px;align-items:center}
+.fchip:hover{background:var(--surface-2)}
+.fchip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.fchip .n{font-variant-numeric:tabular-nums;opacity:.85}
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(10,16,30,.55);display:grid;place-items:center;padding:16px;z-index:50;overflow:auto}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;width:min(580px,100%);max-height:calc(100vh - 32px);overflow:auto;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.panel h2{font-size:19px;margin-bottom:16px}
+.field{display:grid;gap:6px;margin-bottom:14px}
+.field>label,.lbl{font-weight:500;font-size:14px}
+.req{color:var(--bad)}
+.hint{font-size:12px;color:var(--ink-3)}
+.err{font-size:13px;color:var(--bad);min-height:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.seg-o{position:relative;display:block}
+.seg-o input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.seg-o span{display:block;text-align:center;padding:8px 4px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-weight:500;background:var(--surface)}
+.seg-o input:checked+span{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.seg-o input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:6px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:14px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+
+.user-btn{display:flex;align-items:center;gap:10px;background:none;border:0;padding:3px 8px 3px 4px;border-radius:10px;text-align:left}
+.user-btn:hover{background:var(--surface-2)}
+.ulist{display:grid;gap:10px}
+.urow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.urow.off{opacity:.65}
+.urow .avatar{width:40px;height:40px}
+.urow b{font-weight:600;overflow-wrap:anywhere}
+.urow .un{font-size:13px;color:var(--ink-3);overflow-wrap:anywhere}
+.urow .meta{font-size:13px;color:var(--ink-2);margin-top:2px;font-variant-numeric:tabular-nums}
+.role{display:inline-block;margin-left:8px;padding:1px 9px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.5;background:var(--accent-soft);color:var(--accent);vertical-align:1px;white-space:nowrap}
+.role.off{background:var(--surface-2);color:var(--ink-3)}
+.note-card{margin-bottom:14px;font-size:14px;color:var(--ink-2)}
+.stamp{font-size:12px;color:var(--ink-3);margin:-2px 0 12px}
+.check{display:flex;align-items:center;gap:8px;font-size:14px}
+.check input{width:18px;height:18px;margin:0}
+.acct{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.acct .avatar{width:44px;height:44px}
+.sep{border:0;border-top:1px solid var(--line);margin:14px 0}
+.ro{background:var(--surface-2)!important;color:var(--ink-2)}
+.lock{max-width:380px;margin:48px auto}
+.lock.wide{max-width:440px}
+.lock h1{font-size:20px;margin-bottom:4px}
+.lock .sub{color:var(--ink-3);font-size:14px;margin-bottom:16px}
+.is-locked .user{display:none}
+@media (max-width:720px){
+  .top-in{grid-template-columns:1fr auto}
+  #nav{grid-column:1/-1;order:3;overflow-x:auto}
+  .brand-sub{display:none}
+  .user-name,.user-role{display:none}
+}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* ---- MA Contract Tracker additions ---- */
+:root{
+  --u-expired-fg:#9B1C1C; --u-expired-bg:#FBE0E0;
+  --u-d30-fg:#A83F08;     --u-d30-bg:#FFE6D5;
+  --u-d90-fg:#8A5200;     --u-d90-bg:#FFEFD0;
+  --u-d365-fg:#1D4FBF;    --u-d365-bg:#E3EBFC;
+  --u-long-fg:#0F6B3E;    --u-long-bg:#DAF1E5;
+  --u-none-fg:#434D66;    --u-none-bg:#E9ECF3;
+  --bar:#5B87F0; --bar-on:#2457D6; --grid:#E4E8F0;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --u-expired-fg:#FF9A9A; --u-expired-bg:#3E1A1E;
+    --u-d30-fg:#FFA66B;     --u-d30-bg:#3F2312;
+    --u-d90-fg:#F0B04A;     --u-d90-bg:#3A2D14;
+    --u-d365-fg:#8FB0FF;    --u-d365-bg:#1F2D52;
+    --u-long-fg:#4BC98A;    --u-long-bg:#12352A;
+    --u-none-fg:#B0BAD2;    --u-none-bg:#232C44;
+    --bar:#5B87F0; --bar-on:#9DB8FF; --grid:#28324C;
+  }
+}
+:root[data-theme="dark"]{
+  --u-expired-fg:#FF9A9A; --u-expired-bg:#3E1A1E;
+  --u-d30-fg:#FFA66B;     --u-d30-bg:#3F2312;
+  --u-d90-fg:#F0B04A;     --u-d90-bg:#3A2D14;
+  --u-d365-fg:#8FB0FF;    --u-d365-bg:#1F2D52;
+  --u-long-fg:#4BC98A;    --u-long-bg:#12352A;
+  --u-none-fg:#B0BAD2;    --u-none-bg:#232C44;
+  --bar:#5B87F0; --bar-on:#9DB8FF; --grid:#28324C;
+}
+.wrap{max-width:1200px}
+.top-in{max-width:1200px}
+input[type=number],input[type=tel],input.num{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 12px;min-height:40px;font-variant-numeric:tabular-nums}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+select.f{appearance:auto}
+.btn.sm{min-height:34px;padding:4px 12px}
+.btn.ghost-danger{color:var(--bad);border-color:var(--bad-bg);background:transparent}
+.btn.ghost-danger:hover{background:var(--bad-bg)}
+.link{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--ink);text-align:left;cursor:pointer;overflow-wrap:anywhere}
+.link:hover{color:var(--accent);text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* urgency badges: always a text label, colour is only the second cue */
+.ub{display:inline-block;padding:2px 10px;border-radius:999px;font-size:13px;font-weight:600;white-space:nowrap;line-height:1.5}
+.b-expired{color:var(--u-expired-fg);background:var(--u-expired-bg)}
+.b-d30{color:var(--u-d30-fg);background:var(--u-d30-bg)}
+.b-d90{color:var(--u-d90-fg);background:var(--u-d90-bg)}
+.b-d365{color:var(--u-d365-fg);background:var(--u-d365-bg)}
+.b-long{color:var(--u-long-fg);background:var(--u-long-bg)}
+.b-none,.b-closed{color:var(--u-none-fg);background:var(--u-none-bg)}
+
+/* overview tiles */
+.tiles{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.tile{padding:16px;display:block;color:inherit}
+.tile::before{content:none}
+.tile-top{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--ink-2);font-size:14px}
+.tile-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
+.tile-num{margin-top:10px}
+.tile-num small{font:400 14px var(--font-body);color:var(--ink-3)}
+.tile-val{margin-top:4px;font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.cols2{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+.cols2>.main{flex:1.45 1 560px;min-width:0}
+.cols2>.side{flex:1 1 380px;min-width:0;display:grid;gap:16px}
+.card.flush{padding:0}
+.card-hd{padding:16px 18px 12px}
+.card-hd h2{font-size:17px}
+.card-hd p{font-size:13px;color:var(--ink-3);margin-top:2px}
+.prow2{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:11px 18px;border-top:1px solid var(--line)}
+.prow2 .when{flex:0 0 150px}
+.prow2 .what{flex:1 1 200px;min-width:0}
+.prow2 .what .t{font-weight:600;overflow-wrap:anywhere}
+.prow2 .what .s{font-size:12.5px;color:var(--ink-3)}
+.prow2 .end{flex:0 0 100px;text-align:right;font-variant-numeric:tabular-nums}
+.prow2 .end .s{font-size:12.5px;color:var(--ink-3)}
+.autochip{display:inline-block;margin-left:6px;padding:0 8px;border-radius:6px;background:var(--surface-2);color:var(--ink-2);font-size:12px;font-weight:500;vertical-align:1px;white-space:nowrap}
+
+/* month chart */
+.mchart{display:flex;gap:8px;padding:0 18px}
+.my{width:20px;height:150px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;font-size:11.5px;color:var(--ink-3);line-height:1;font-variant-numeric:tabular-nums}
+.mplot{position:relative;flex:1;min-width:0}
+.mgrid{position:relative;height:150px;border-bottom:1px solid var(--line)}
+.mgrid i{position:absolute;left:0;right:0;border-top:1px dashed var(--grid)}
+.mcols{position:absolute;inset:0;display:flex;gap:4px}
+.mcol{flex:1 1 0;min-width:0;padding:0;border:0;background:transparent;display:flex;align-items:flex-end;justify-content:center;border-radius:6px 6px 0 0}
+.mcol:hover{background:var(--surface-2)}
+.mcol .bar{display:block;width:68%;max-width:30px;border-radius:4px 4px 0 0;background:var(--bar)}
+.mcol[aria-pressed="true"] .bar{background:var(--bar-on)}
+.mcol[aria-pressed="true"]{background:var(--surface-2)}
+.mx{display:flex;gap:4px;margin-top:6px}
+.mx span{flex:1 1 0;min-width:0;text-align:center;font-size:11px;line-height:1.25;color:var(--ink-3)}
+.mx em{display:block;font-style:normal;font-size:10.5px}
+.mdetail{margin:12px 18px 0;padding:10px 14px;border-radius:10px;background:var(--bg);min-height:64px}
+.mdetail b{font-weight:600}
+.mdetail .s{font-size:12.5px;color:var(--ink-2);margin-top:2px;overflow-wrap:anywhere}
+.mfoot{margin:10px 18px 16px;font-size:12px;color:var(--ink-3)}
+
+/* clean-up panel */
+.fixrow{display:flex;gap:12px;align-items:flex-start;padding:12px 18px;border-top:1px solid var(--line)}
+.fix-ic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--u-d90-bg);color:var(--u-d90-fg)}
+.fixrow b{font-weight:600}
+.fixrow .s{font-size:12.5px;color:var(--ink-2);overflow-wrap:anywhere}
+.fixrow .btn{margin-top:6px}
+.allgood{display:flex;gap:10px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);color:var(--u-long-fg);font-weight:500}
+
+/* contract list */
+.toolbar2{display:grid;gap:12px;margin-bottom:16px}
+.search{position:relative;max-width:480px}
+.search svg{position:absolute;left:12px;top:12px;color:var(--ink-3)}
+.search input{padding-left:38px}
+.fchip .n{font-size:12.5px;min-width:22px;text-align:center;padding:0 6px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);opacity:1}
+.fchip[aria-pressed="true"] .n{background:var(--surface);color:var(--accent)}
+.ctable{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
+.crow{display:grid;grid-template-columns:128px minmax(190px,1fr) 140px 150px 92px 84px 176px;gap:10px;align-items:center;padding:9px 16px;border-top:1px solid var(--line);min-height:62px}
+.chead{background:var(--surface-2);border-top:0;font-size:12.5px;font-weight:600;color:var(--ink-2);min-height:0;padding:10px 16px}
+.crow .sub{font-size:12.5px;color:var(--ink-3);overflow-wrap:anywhere}
+.crow .c-sup{font-size:13.5px;color:var(--ink-2);overflow-wrap:anywhere}
+.crow .c-per{font-size:13px;font-variant-numeric:tabular-nums}
+.crow .c-per .warn{font-size:12px;font-weight:500;color:var(--u-d90-fg)}
+.crow .c-rem{font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums}
+.crow .c-rem.late{color:var(--u-expired-fg)}
+.crow .c-amt{text-align:right;font-variant-numeric:tabular-nums}
+.crow .c-act{display:flex;justify-content:flex-end;align-items:center;gap:6px}
+.crow .mlab{display:none}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.pager .pg{display:flex;gap:6px;align-items:center}
+.pgbtn{min-width:38px;min-height:38px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.pgbtn:hover{background:var(--surface-2)}
+.pgbtn[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.pgbtn[disabled]{opacity:.5;cursor:default}
+
+/* detail / renew / edit modals */
+.panel.wide{width:min(880px,100%)}
+.panel.mid{width:min(680px,100%)}
+.dl{display:grid;grid-template-columns:128px minmax(0,1fr);gap:8px 12px;font-size:14px;margin:0}
+.dl dt{color:var(--ink-3)}
+.dl dd{margin:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.rn{display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start}
+.rn-cur{flex:1 1 280px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px}
+.rn-cur h3{font-size:15px;margin-bottom:8px}
+.rn-form{flex:1.7 1 400px;min-width:0}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-items:start}
+.calc{min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-radius:9px;background:var(--surface-2);padding:0 12px;font-variant-numeric:tabular-nums}
+.infobox{background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:14px;color:var(--ink-2)}
+.infobox b{color:var(--ink)}
+.infobox ul{margin:6px 0 0;padding-left:20px;display:grid;gap:3px}
+.hist{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.hist li{background:var(--bg);border-radius:10px;padding:10px 12px;font-size:13.5px}
+.hist .h1{font-weight:600;font-variant-numeric:tabular-nums}
+.hist .h2{color:var(--ink-2);font-size:12.5px;margin-top:2px;overflow-wrap:anywhere}
+.row-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
+.spread{justify-content:space-between}
+
+@media (max-width:1100px){
+  .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .chead{display:none}
+  .crow{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main stat" "sup sup" "per rem" "amt act";gap:6px 12px;padding:12px 14px}
+  .crow .c-status{grid-area:stat;justify-self:end}
+  .crow .c-main{grid-area:main}
+  .crow .c-sup{grid-area:sup}
+  .crow .c-per{grid-area:per}
+  .crow .c-rem{grid-area:rem;justify-self:end}
+  .crow .c-amt{grid-area:amt;text-align:left}
+  .crow .c-act{grid-area:act}
+}
+@media (max-width:720px){
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .three{grid-template-columns:1fr}
+  .dl{grid-template-columns:104px minmax(0,1fr)}
+  .prow2 .when{flex-basis:100%}
+  .prow2 .end{text-align:left;flex-basis:auto}
+}
+@media print{.top,#toast,#modal{display:none}}
+
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="m9 14.5 2 2 4-4.5"/></svg>
+      </span>
+      <div>
+        <div class="brand-name">MA Contract Tracker</div>
+        <div class="brand-sub">ระบบติดตามการต่อสัญญา MA</div>
+      </div>
+    </div>
+    <nav id="nav" aria-label="เมนูหลัก"></nav>
+    <div class="user" id="userBox"></div>
+  </div>
+</header>
+<div id="banner" role="status"></div>
+<main class="wrap" id="main"><p class="loading">กำลังโหลดข้อมูล…</p></main>
+<div id="modal"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------- constants ---------- */
+  var MON_S = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+  var VIEWS = ['dashboard', 'contracts', 'users'];
+  var PAGE = 12;
+  var BUCKET = {
+    expired: 'หมดอายุแล้ว', d30: 'ด่วน ≤ 30 วัน', d90: 'ใกล้หมด 31–90', d365: '91–365 วัน',
+    long: 'มากกว่า 365 วัน', none: 'ไม่มีวันหมด', closed: 'ปิดสัญญาแล้ว'
+  };
+  var CHIPS = [['all', 'ทั้งหมด'], ['expired', 'หมดอายุแล้ว'], ['d30', '≤ 30 วัน'], ['d90', '31–90 วัน'],
+    ['d365', '91–365 วัน'], ['long', '> 365 วัน'], ['other', 'ปิดแล้ว / ไม่มีวันหมด']];
+
+  var I = function (d, w) { return '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + d + '</svg>'; };
+  var ICON = {
+    plus: I('<path d="M12 5v14M5 12h14"/>', 2.4),
+    edit: I('<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+    out: I('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'),
+    copy: I('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>'),
+    open: I('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'),
+    right: I('<path d="M5 12h14M13 6l6 6-6 6"/>'),
+    search: I('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>'),
+    alert: I('<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/>', 1.8),
+    info: I('<circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>', 1.8),
+    check: I('<circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/>', 1.8),
+    xc: I('<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>', 1.8),
+    clock: I('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', 1.8),
+    hour: I('<path d="M6 3h12M6 21h12M7 3v4l5 5 5-5V3M7 21v-4l5-5 5 5v4"/>', 1.8),
+    cal: I('<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>', 1.8)
+  };
+  var TILES = [
+    ['expired', 'หมดอายุแล้ว', ICON.xc],
+    ['d30', 'ด่วน ภายใน 30 วัน', ICON.clock],
+    ['d90', 'ใกล้หมด 31–90 วัน', ICON.hour],
+    ['d365', '91–365 วัน', ICON.cal],
+    ['long', 'มากกว่า 365 วัน', ICON.check]
+  ];
+
+  /* ---------- state ---------- */
+  var API_URL = 'https://script.google.com/macros/s/AKfycbx5mdGTTU5TR5jwcz9NmCphUtsZ4k-QiJVpnTUEAgHKqFPG5xb1GH83LijyjMnqupPz/exec'; // Google Apps Script web app address (ends with /exec)
+  var POLL_MS = 15000;
+  var TOK_KEY = 'ma_tok_v1';
+  var USER_KEY = 'ma_user_v1';
+  var token = '';
+  var me = null;
+  var users = [];
+  var maxUsers = 5;
+  var auth = 'checking';   // 'checking' | 'setup' | 'login' | 'ok'
+  var lockError = '';
+  var syncError = '';
+  var writeSeq = 0, writing = 0, refreshing = false, lastSig = '';
+  var contracts = [];
+  var renewals = [];
+  var ui = { view: 'dashboard', f: 'all', q: '', page: 0, month: 0 };
+  var lastFocus = null, pendingConfirm = null, toastTimer = null;
+
+  /* ---------- helpers ---------- */
+  function $(s) { return document.querySelector(s); }
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function parseYmd(s) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || '');
+    if (!m) return null;
+    var d = new Date(+m[1], +m[2] - 1, +m[3]);
+    return d.getMonth() === +m[2] - 1 ? d : null;
+  }
+  function today() { var n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+  function daysLeft(s) { var d = parseYmd(s); return d ? Math.round((d - today()) / 86400000) : null; }
+  function addDays(d, n) { return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+  function fmtShort(s) { var d = parseYmd(s); return d ? d.getDate() + ' ' + MON_S[d.getMonth()] + ' ' + String(d.getFullYear() + 543).slice(2) : '—'; }
+  function fmtLong(s) { var d = parseYmd(s); return d ? d.getDate() + ' ' + MON_S[d.getMonth()] + ' ' + (d.getFullYear() + 543) : '—'; }
+  function fmtStamp(iso) {
+    var d = new Date(iso);
+    if (!iso || isNaN(d.getTime())) return '';
+    return d.getDate() + ' ' + MON_S[d.getMonth()] + ' ' + (d.getFullYear() + 543) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+  }
+  function num(v) { var n = parseFloat(String(v == null ? '' : v).replace(/,/g, '')); return isNaN(n) ? 0 : n; }
+  function fmtNum(n) { return Number(n).toLocaleString('en-US', { maximumFractionDigits: 2 }); }
+  function money(v) { return '฿' + fmtNum(num(v)); }
+  function moneyOrDash(v) { return num(v) ? fmtNum(num(v)) : '—'; }
+  function isAdmin() { return !!me && me.role === 'admin'; }
+  function userById(id) { for (var i = 0; i < users.length; i++) if (users[i].id === id) return users[i]; return null; }
+  function activeUsers() { return users.filter(function (u) { return u.active === 'yes'; }); }
+  function findContract(id) { for (var i = 0; i < contracts.length; i++) if (contracts[i].id === id) return contracts[i]; return null; }
+  function historyOf(id) {
+    return renewals.filter(function (r) { return r.contractId === id; }).sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
+  }
+  function isUrl(s) { return /^https?:\/\//i.test(String(s || '').trim()); }
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove('show'); }, 2800);
+  }
+
+  /* ---------- contract logic ---------- */
+  function bucketOf(c) {
+    if (c.status === 'Ended') return 'closed';
+    if (!c.end) return 'none';
+    var d = daysLeft(c.end);
+    if (d === null) return 'none';
+    if (d < 0) return 'expired';
+    if (d <= 30) return 'd30';
+    if (d <= 90) return 'd90';
+    if (d <= 365) return 'd365';
+    return 'long';
+  }
+  function remainText(c) {
+    var b = bucketOf(c);
+    if (b === 'closed') return 'ปิดแล้ว';
+    if (b === 'none') return '—';
+    var d = daysLeft(c.end);
+    if (d < 0) return -d > 365 ? 'เกิน ' + Math.floor(-d / 365) + ' ปี' : 'เกิน ' + (-d) + ' วัน';
+    return d === 0 ? 'วันนี้' : 'อีก ' + d + ' วัน';
+  }
+  function whenText(c) {
+    var b = bucketOf(c), d = daysLeft(c.end);
+    if (b === 'closed') return 'ปิดสัญญาแล้ว';
+    if (b === 'none' || d === null) return 'ไม่มีวันหมด';
+    if (d < 0) return 'เกินกำหนด ' + (-d) + ' วัน';
+    return d === 0 ? 'หมดวันนี้' : 'อีก ' + d + ' วัน';
+  }
+  // most urgent first: recently expired, then upcoming, then closed / no end date
+  function sortKey(c) {
+    var b = bucketOf(c), d = daysLeft(c.end);
+    if (b === 'expired') return -1000000 - d;
+    if (b === 'closed' || b === 'none') return 1000000;
+    return d;
+  }
+  function byUrgency(a, b) { return sortKey(a) - sortKey(b) || String(a.title).localeCompare(String(b.title), 'th'); }
+  function matches(c, q) {
+    if (!q) return true;
+    var hay = [c.title, c.groupName, c.supplier, c.serial, c.refNo, c.note].join(' ').toLowerCase();
+    return hay.indexOf(q) >= 0;
+  }
+  function inFilter(c, f) {
+    var b = bucketOf(c);
+    return f === 'all' || f === b || (f === 'other' && (b === 'none' || b === 'closed'));
+  }
+  function periodText(c) {
+    return (c.start ? fmtShort(c.start) : '—') + ' – ' + (c.end ? fmtShort(c.end) : (c.noExpiry === 'yes' ? 'ไม่มีวันหมด' : '—'));
+  }
+  function urgentCount() {
+    return contracts.filter(function (c) { var b = bucketOf(c); return b === 'expired' || b === 'd30'; }).length;
+  }
+  function addYear(startStr) {   // same date next year, minus one day
+    var s = parseYmd(startStr); if (!s) return '';
+    return ymd(new Date(s.getFullYear() + 1, s.getMonth(), s.getDate() - 1));
+  }
+
+  // things that are probably wrong in the data
+  function issues() {
+    var out = [];
+    var stale = contracts.filter(function (c) { return c.status === 'Active' && c.end && daysLeft(c.end) < -365; });
+    if (stale.length) out.push({
+      title: stale.length + ' รายการยังเป็น “ใช้งานอยู่” ทั้งที่หมดอายุเกิน 1 ปี',
+      sub: stale.slice(0, 4).map(function (c) { return c.title; }).join(' · ') + (stale.length > 4 ? ' และอีก ' + (stale.length - 4) + ' รายการ' : '') + ' — ควรปิดสัญญา หรือต่อสัญญา',
+      f: 'expired'
+    });
+    var noEnd = contracts.filter(function (c) { return c.status === 'Active' && !c.end && c.noExpiry !== 'yes'; });
+    if (noEnd.length) out.push({
+      title: noEnd.length + ' รายการยังไม่มีวันหมดอายุ',
+      sub: noEnd.slice(0, 4).map(function (c) { return c.title; }).join(' · ') + ' — ใส่วันหมดอายุ หรือติ๊ก “ไม่มีวันหมดอายุ” ถ้าเป็นแบบซื้อขาด',
+      f: 'other'
+    });
+    return out;
+  }
+
+  /* ---------- Google Apps Script API ---------- */
+  function readTok() { try { return localStorage.getItem(TOK_KEY) || ''; } catch (e) { return ''; } }
+  function saveTok(t) { try { if (t) localStorage.setItem(TOK_KEY, t); else localStorage.removeItem(TOK_KEY); } catch (e) { /* storage blocked */ } }
+  function readUserHint() { try { return localStorage.getItem(USER_KEY) || ''; } catch (e) { return ''; } }
+  function saveUserHint(u) { try { if (u) localStorage.setItem(USER_KEY, u); } catch (e) { /* storage blocked */ } }
+
+  async function api(action, payload) {
+    var ctl = new AbortController();
+    var timer = setTimeout(function () { ctl.abort(); }, 25000);
+    try {
+      var res = await fetch(API_URL, {
+        method: 'POST',
+        // text/plain keeps this a simple request, so the browser sends no preflight
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(Object.assign({ action: action, token: token }, payload || {})),
+        redirect: 'follow',
+        signal: ctl.signal
+      });
+      var data = await res.json();
+      if (!data || !data.ok) {
+        var er = new Error((data && data.error) || 'bad_response');
+        er.code = (data && data.error) || 'bad_response';
+        throw er;
+      }
+      return data;
+    } finally { clearTimeout(timer); }
+  }
+
+  var ERR = {
+    bad_login: 'ชื่อผู้ใช้หรือ PIN ไม่ถูกต้อง',
+    bad_pin: 'PIN เดิมไม่ถูกต้อง',
+    locked: 'ใส่ผิดหลายครั้ง ลองใหม่ใน 10 นาที',
+    bad_token: 'หมดเวลาเข้าสู่ระบบ ให้เข้าสู่ระบบใหม่',
+    forbidden: 'ไม่มีสิทธิ์ทำรายการนี้',
+    not_found: 'ไม่พบรายการนี้ (อาจถูกลบไปแล้ว)',
+    already_setup: 'ตั้งค่าครั้งแรกเสร็จแล้ว ให้เข้าสู่ระบบแทน',
+    bad_setup_key: 'รหัสตั้งค่าไม่ถูกต้อง',
+    no_setup_key: 'ในสคริปต์ยังไม่มีรหัสตั้งค่า',
+    max_users: 'มีผู้ใช้ที่เปิดใช้งานครบแล้ว ปิดใช้งานคนอื่นก่อน',
+    username_taken: 'ชื่อผู้ใช้นี้มีอยู่แล้ว',
+    bad_username: 'ชื่อผู้ใช้ใช้ได้เฉพาะ a-z ตัวเลข . _ - ยาว 2–24 ตัว',
+    bad_name: 'ใส่ชื่อที่แสดง (ไม่เกิน 60 ตัวอักษร)',
+    weak_pin: 'PIN ต้องยาวอย่างน้อย 6 ตัว',
+    last_admin: 'ต้องมีผู้ดูแลระบบที่ใช้งานอยู่อย่างน้อย 1 คน',
+    need_title: 'ใส่ชื่อรายการก่อน',
+    need_dates: 'ใส่วันเริ่มและวันสิ้นสุดของสัญญาใหม่',
+    bad_date: 'วันที่ไม่ถูกต้อง',
+    bad_number: 'ตัวเลขไม่ถูกต้อง',
+    bad_status: 'สถานะไม่ถูกต้อง',
+    end_before_start: 'วันสิ้นสุดต้องไม่ก่อนวันเริ่ม'
+  };
+  function errText(e) {
+    var c = e && (e.code || e.name);
+    if (ERR[c]) return ERR[c];
+    if (c === 'AbortError') return 'เชื่อมต่อช้าเกินไป';
+    if (c === 'TypeError') return 'ติดต่อ Google ไม่ได้ ตรวจอินเทอร์เน็ตหรือลิงก์ Web App';
+    return (e && e.message) || 'ไม่ทราบสาเหตุ';
+  }
+
+  async function loadMode() {
+    auth = 'checking'; syncError = '';
+    render();
+    try {
+      var d = await api('status');
+      auth = d.mode === 'setup' ? 'setup' : 'login';
+    } catch (e) { syncError = errText(e); }
+    render();
+  }
+
+  function clearSession() {
+    token = ''; saveTok('');
+    me = null; users = []; contracts = []; renewals = []; lastSig = '';
+    closeModal();
+  }
+  function toLogin(msg) { clearSession(); lockError = msg || ''; loadMode(); }
+  async function logout() {
+    if (token) { try { await api('logout'); } catch (e) { /* the token expires on its own */ } }
+    toLogin('');
+  }
+  function signedIn(res, username) {
+    token = res.token; saveTok(token);
+    me = res.me; saveUserHint(username || res.me.username);
+    users = [res.me]; contracts = []; renewals = []; lastSig = '';
+    lockError = ''; syncError = '';
+    auth = 'checking';
+    render();
+    refresh();
+  }
+  function upsertLocal(arr, row) {
+    for (var i = 0; i < arr.length; i++) if (arr[i].id === row.id) { arr[i] = row; return; }
+    arr.push(row);
+  }
+  async function safe(fn, okMsg) {
+    writing++; writeSeq++;
+    try { await fn(); if (okMsg) toast(okMsg); return true; }
+    catch (e) {
+      console.error(e);
+      if (e && e.code === 'bad_token') toLogin(ERR.bad_token);
+      else toast('บันทึกไม่สำเร็จ: ' + errText(e));
+      return false;
+    } finally {
+      writing--; writeSeq++;
+      lastSig = '';
+      render();
+      refresh();
+    }
+  }
+  async function refresh() {
+    if (refreshing || writing > 0 || !token) return;
+    refreshing = true;
+    var seq = writeSeq;
+    try {
+      var data = await api('list');
+      if (seq === writeSeq && writing === 0) {
+        var sig = JSON.stringify([data.contracts, data.renewals, data.users, data.me]);
+        var changed = sig !== lastSig || auth !== 'ok' || !!syncError;
+        contracts = data.contracts; renewals = data.renewals; users = data.users; me = data.me;
+        maxUsers = data.maxUsers || 5; lastSig = sig;
+        auth = 'ok'; syncError = '';
+        if (changed && !modalOpen()) render();
+      }
+    } catch (e) {
+      if (e && e.code === 'bad_token') toLogin(auth === 'ok' ? ERR.bad_token : '');
+      else { syncError = errText(e); render(); }
+    } finally { refreshing = false; }
+  }
+
+  /* ---------- shell ---------- */
+  function renderNav() {
+    if (auth !== 'ok') { $('#nav').innerHTML = ''; return; }
+    var urgent = urgentCount();
+    var items = [['dashboard', 'ภาพรวม'], ['contracts', 'สัญญาทั้งหมด']];
+    if (isAdmin()) items.push(['users', 'ผู้ใช้']);
+    $('#nav').innerHTML = items.map(function (it) {
+      var badge = it[0] === 'contracts' && urgent ? '<span class="badge" title="หมดอายุแล้วหรือครบใน 30 วัน">' + urgent + '</span>' : '';
+      return '<a href="#' + it[0] + '"' + (ui.view === it[0] ? ' aria-current="page"' : '') + '>' + it[1] + badge + '</a>';
+    }).join('');
+  }
+  function renderBanner() {
+    var msg = '';
+    if (API_URL.indexOf('PUT_') === 0) msg = 'ยังไม่ได้ตั้งค่าลิงก์ Web App ใน index.html (ตัวแปร API_URL)';
+    else if (syncError && auth === 'ok') msg = 'เชื่อมต่อ Google Sheet ไม่ได้ (' + syncError + ') กำลังลองใหม่ ข้อมูลที่เห็นอาจไม่ใช่ล่าสุด';
+    $('#banner').textContent = msg;
+  }
+  function renderUser() {
+    var box = $('#userBox');
+    if (!box) return;
+    if (auth !== 'ok' || !me) { box.innerHTML = ''; return; }
+    box.innerHTML = '<button type="button" class="user-btn" data-action="account" aria-label="บัญชีของฉัน" title="บัญชีของฉัน">' +
+      '<span class="avatar" aria-hidden="true">' + esc(String(me.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
+      '<div><div class="user-name">' + esc(me.name) + '</div><div class="user-role">' + (isAdmin() ? 'Admin' : 'สมาชิก') + '</div></div></button>' +
+      '<button type="button" class="icon-btn" data-action="logout" aria-label="ออกจากระบบ" title="ออกจากระบบ">' + ICON.out + '</button>';
+  }
+
+  function loginHTML() {
+    return '<div class="card lock"><h1>เข้าสู่ระบบ</h1><p class="sub">ใส่ชื่อผู้ใช้และ PIN ของคุณ</p>' +
+      '<form id="loginForm" novalidate>' +
+      '<div class="field"><label for="lg-user">ชื่อผู้ใช้</label><input type="text" id="lg-user" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="40" value="' + esc(readUserHint()) + '"></div>' +
+      '<div class="field"><label for="lg-pin">PIN</label><input type="password" id="lg-pin" autocomplete="current-password" maxlength="64"></div>' +
+      '<div class="err" id="lg-err" role="alert">' + esc(lockError) + '</div>' +
+      '<div class="actions"><button type="submit" class="btn primary" id="lg-btn">เข้าสู่ระบบ</button></div></form></div>';
+  }
+  function setupHTML() {
+    return '<div class="card lock wide"><h1>ตั้งค่าครั้งแรก</h1>' +
+      '<p class="sub">สร้างบัญชีผู้ดูแลระบบ (Admin) ของคุณ แล้วค่อยเพิ่มผู้ใช้คนอื่นได้ในเมนู "ผู้ใช้"</p>' +
+      '<form id="setupForm" novalidate>' +
+      '<div class="field"><label for="su-key">รหัสตั้งค่า</label><input type="password" id="su-key" autocomplete="off" maxlength="64"><div class="hint">รหัสใช้ครั้งเดียวสำหรับสร้างบัญชีแรก (ที่ได้รับตอนส่งมอบระบบ)</div></div>' +
+      '<div class="two">' +
+        '<div class="field"><label for="su-user">ชื่อผู้ใช้</label><input type="text" id="su-user" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="24" placeholder="เช่น nattira"><div class="hint">a-z ตัวเลข . _ - ใช้ตอนเข้าสู่ระบบ</div></div>' +
+        '<div class="field"><label for="su-name">ชื่อที่แสดง</label><input type="text" id="su-name" autocomplete="name" maxlength="60" placeholder="เช่น Nattira Tharatoy"></div>' +
+      '</div>' +
+      '<div class="two">' +
+        '<div class="field"><label for="su-pin">PIN ใหม่ของคุณ</label><input type="password" id="su-pin" autocomplete="new-password" maxlength="64"><div class="hint">อย่างน้อย 6 ตัว</div></div>' +
+        '<div class="field"><label for="su-pin2">ยืนยัน PIN</label><input type="password" id="su-pin2" autocomplete="new-password" maxlength="64"></div>' +
+      '</div>' +
+      '<div class="err" id="su-err" role="alert"></div>' +
+      '<div class="actions"><button type="submit" class="btn primary" id="su-btn">สร้างบัญชีผู้ดูแลระบบ</button></div></form></div>';
+  }
+  function checkingHTML() {
+    if (syncError) {
+      return '<div class="card empty"><p>เชื่อมต่อ Google Sheet ไม่ได้: ' + esc(syncError) + '</p>' +
+        '<div class="actions" style="justify-content:center"><button type="button" class="btn primary" data-action="retry">ลองใหม่</button>' +
+        (token ? '<button type="button" class="btn" data-action="logout">ออกจากระบบ</button>' : '') + '</div></div>';
+    }
+    return '<p class="loading">กำลังโหลดข้อมูล…</p>';
+  }
+
+  function render() {
+    var keep = document.activeElement;
+    var kid = keep && keep.id && keep.closest('#main') ? keep.id : '';
+    var ss = kid ? keep.selectionStart : null;
+    var se = kid ? keep.selectionEnd : null;
+
+    if (ui.view === 'users' && auth === 'ok' && !isAdmin()) ui.view = 'dashboard';
+    renderNav(); renderUser(); renderBanner();
+    document.body.classList.toggle('is-locked', auth !== 'ok');
+    var keepForm = (auth === 'login' && document.getElementById('loginForm')) || (auth === 'setup' && document.getElementById('setupForm'));
+    if (!keepForm || syncError) {
+      $('#main').innerHTML = auth === 'login' ? loginHTML()
+        : auth === 'setup' ? setupHTML()
+        : auth !== 'ok' ? checkingHTML()
+        : ui.view === 'contracts' ? viewContracts() : ui.view === 'users' ? viewUsers() : viewDashboard();
+    }
+    if (!kid && (auth === 'login' || auth === 'setup') && !modalOpen()) {
+      var fi = document.getElementById(auth === 'login' ? (readUserHint() ? 'lg-pin' : 'lg-user') : 'su-key');
+      if (fi) fi.focus();
+    }
+    if (kid) {
+      var el = document.getElementById(kid);
+      if (el) {
+        el.focus();
+        try { if (ss != null) el.setSelectionRange(ss, se); } catch (e) { /* not a text input */ }
+      }
+    }
+  }
+
+  /* ---------- overview ---------- */
+  function actionButtons(c) {
+    var has = !!String(c.docPath || '').trim();
+    var closed = c.status === 'Ended';
+    return '<button type="button" class="btn sm" data-action="renew" data-id="' + esc(c.id) + '"' + (closed ? '' : ' style="border-color:var(--accent);color:var(--accent)"') + '>' + (closed ? 'เปิดใหม่' : 'ต่อสัญญา') + '</button>' +
+      '<button type="button" class="icon-btn" data-action="edit" data-id="' + esc(c.id) + '" aria-label="แก้ไข ' + esc(c.title) + '" title="แก้ไข">' + ICON.edit + '</button>' +
+      '<button type="button" class="icon-btn" data-action="doc" data-id="' + esc(c.id) + '"' + (has ? '' : ' disabled') + ' aria-label="' + (isUrl(c.docPath) ? 'เปิดลิงก์เอกสาร ' : 'คัดลอกที่อยู่เอกสาร ') + esc(c.title) + '" title="' + (has ? (isUrl(c.docPath) ? 'เปิดลิงก์เอกสาร' : 'คัดลอกที่อยู่เอกสาร') : 'ยังไม่มีที่อยู่เอกสาร') + '">' + (isUrl(c.docPath) ? ICON.open : ICON.copy) + '</button>';
+  }
+
+  function viewDashboard() {
+    var t = {}, activeValue = 0;
+    TILES.forEach(function (x) { t[x[0]] = { n: 0, v: 0 }; });
+    contracts.forEach(function (c) {
+      var b = bucketOf(c);
+      if (t[b]) { t[b].n++; t[b].v += num(c.amount); }
+      if (b !== 'expired' && b !== 'closed') activeValue += num(c.amount);
+    });
+    var head = '<div class="page-head"><div><h1>ภาพรวมสัญญา MA</h1><p class="sub">ข้อมูล ณ ' + fmtLong(ymd(today())) + ' · ' + contracts.length + ' รายการ · มูลค่ารวมที่ยังมีผล ' + money(activeValue) + '</p></div>' +
+      '<button type="button" class="btn primary" data-action="add">' + ICON.plus + 'เพิ่มสัญญา</button></div>';
+
+    if (!contracts.length) {
+      return head + '<div class="card empty"><p>ยังไม่มีสัญญาในระบบ</p><button type="button" class="btn primary" data-action="add">' + ICON.plus + 'เพิ่มสัญญาแรก</button></div>';
+    }
+
+    var tiles = '<div class="tiles">' + TILES.map(function (x) {
+      return '<button type="button" class="tile" data-action="go-filter" data-f="' + x[0] + '">' +
+        '<div class="tile-top"><span class="tile-ic b-' + x[0] + '">' + x[2] + '</span>' + x[1] + '</div>' +
+        '<div class="tile-num">' + t[x[0]].n + ' <small>รายการ</small></div>' +
+        '<div class="tile-val">มูลค่า ' + money(t[x[0]].v) + '</div></button>';
+    }).join('') + '</div>';
+
+    // priority list: expired within a year, or due within 90 days
+    var pri = contracts.filter(function (c) {
+      if (c.status === 'Ended' || !c.end) return false;
+      var d = daysLeft(c.end);
+      return d !== null && d >= -365 && d <= 90;
+    }).sort(byUrgency);
+    var priSum = pri.reduce(function (s, c) { return s + num(c.amount); }, 0);
+    var priRows = pri.length ? pri.map(function (c) {
+      return '<div class="prow2"><div class="when"><span class="ub b-' + bucketOf(c) + '">' + esc(whenText(c)) + '</span></div>' +
+        '<div class="what"><div class="t"><button type="button" class="link" data-action="view" data-id="' + esc(c.id) + '">' + esc(c.title) + '</button>' + (c.auto === 'yes' ? '<span class="autochip">ต่ออัตโนมัติ</span>' : '') + '</div>' +
+        '<div class="s">' + esc([c.groupName, c.supplier].filter(Boolean).join(' · ')) + '</div></div>' +
+        '<div class="end"><div>' + esc(fmtShort(c.end)) + '</div><div class="s">' + (num(c.amount) ? money(c.amount) : '—') + '</div></div>' +
+        '<button type="button" class="btn sm" data-action="renew" data-id="' + esc(c.id) + '" style="border-color:var(--accent);color:var(--accent)">ต่อสัญญา</button></div>';
+    }).join('') : '<div class="allgood">' + ICON.check + 'ไม่มีสัญญาที่ต้องดำเนินการใน 90 วันนี้</div>';
+    var priCard = '<section class="card flush" aria-labelledby="pri-h"><div class="card-hd"><div class="card-h" style="margin:0"><div><h2 id="pri-h">ต้องดำเนินการก่อน</h2>' +
+      '<p>เพิ่งหมดอายุ และจะครบใน 90 วัน · ' + pri.length + ' รายการ · ' + money(priSum) + '</p></div>' +
+      '<button type="button" class="btn sm" data-action="go-filter" data-f="all">ดูทั้งหมด ' + ICON.right + '</button></div></div>' + priRows + '</section>';
+
+    // month chart: 12 months from this month, active contracts only
+    var now = today(), months = [], i;
+    for (i = 0; i < 12; i++) {
+      var md = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      months.push({ y: md.getFullYear(), m: md.getMonth(), n: 0, sum: 0, names: [] });
+    }
+    var outside = 0;
+    contracts.forEach(function (c) {
+      var b = bucketOf(c);
+      if (b === 'expired' || b === 'closed' || b === 'none') return;
+      var d = parseYmd(c.end); if (!d) return;
+      var hit = null;
+      months.forEach(function (mm) { if (mm.y === d.getFullYear() && mm.m === d.getMonth()) hit = mm; });
+      if (hit) { hit.n++; hit.sum += num(c.amount); hit.names.push(c.title); } else outside++;
+    });
+    var mx = Math.max.apply(null, months.map(function (m) { return m.n; }));
+    var ymax = Math.max(2, Math.ceil(mx / 2) * 2);
+    var sel = Math.min(Math.max(ui.month, 0), 11), sm = months[sel];
+    var cols = months.map(function (m, k) {
+      var h = Math.round(m.n / ymax * 150);
+      return '<button type="button" class="mcol" data-action="pick-month" data-i="' + k + '" aria-pressed="' + (k === sel) + '" aria-label="' + MON_S[m.m] + ' ' + (m.y + 543) + ': ' + m.n + ' รายการ"><span class="bar" style="height:' + h + 'px"></span></button>';
+    }).join('');
+    var xl = months.map(function (m, k) {
+      return '<span>' + MON_S[m.m] + '<em>' + (k === 0 || m.m === 0 ? String(m.y + 543).slice(2) : '&nbsp;') + '</em></span>';
+    }).join('');
+    var names = sm.names.length
+      ? esc(sm.names.slice(0, 3).join(' · ')) + (sm.names.length > 3 ? ' · และอีก ' + (sm.names.length - 3) + ' รายการ' : '')
+      : 'ไม่มีรายการหมดอายุในเดือนนี้';
+    var chart = '<section class="card flush" aria-labelledby="ch-h"><div class="card-hd"><h2 id="ch-h">ครบกำหนดรายเดือน</h2><p>จำนวนรายการที่หมดอายุในแต่ละเดือน · 12 เดือนข้างหน้า</p></div>' +
+      '<div class="mchart"><div class="my"><span>' + ymax + '</span><span>' + (ymax / 2) + '</span><span>0</span></div><div class="mplot">' +
+      '<div class="mgrid"><i style="top:0"></i><i style="top:50%"></i><div class="mcols">' + cols + '</div></div><div class="mx">' + xl + '</div></div></div>' +
+      '<div class="mdetail" aria-live="polite"><div><b>' + MON_S[sm.m] + ' ' + (sm.y + 543) + '</b> · ' + sm.n + ' รายการ · ' + money(sm.sum) + '</div><div class="s">' + names + '</div></div>' +
+      '<p class="mfoot">ไม่รวม ' + outside + ' รายการที่หมดหลังจากช่วง 12 เดือนนี้</p></section>';
+
+    var iss = issues();
+    var fix = '<section class="card flush" aria-labelledby="fx-h"><div class="card-hd"><h2 id="fx-h">ข้อมูลที่ควรเคลียร์</h2><p>ระบบตรวจให้อัตโนมัติ — แก้แล้วตัวเลขข้างบนจะตรงขึ้น</p></div>' +
+      (iss.length ? iss.map(function (x) {
+        return '<div class="fixrow"><span class="fix-ic">' + ICON.alert + '</span><div><b>' + esc(x.title) + '</b><div class="s">' + esc(x.sub) + '</div>' +
+          '<button type="button" class="btn sm" data-action="go-filter" data-f="' + x.f + '">ดูรายการ</button></div></div>';
+      }).join('') : '<div class="allgood">' + ICON.check + 'ไม่พบข้อมูลที่ต้องเคลียร์</div>') + '</section>';
+
+    return head + tiles + '<div class="cols2"><div class="main">' + priCard + '</div><div class="side">' + chart + fix + '</div></div>';
+  }
+
+  /* ---------- contract list ---------- */
+  function viewContracts() {
+    var q = ui.q.trim().toLowerCase();
+    var base = contracts.filter(function (c) { return matches(c, q); });
+    var list = base.filter(function (c) { return inFilter(c, ui.f); }).sort(byUrgency);
+    var pages = Math.max(1, Math.ceil(list.length / PAGE));
+    if (ui.page >= pages) ui.page = pages - 1;
+    var from = ui.page * PAGE;
+    var slice = list.slice(from, from + PAGE);
+
+    var head = '<div class="page-head"><div><h1>สัญญาทั้งหมด</h1><p class="sub">เรียงจากที่ต้องทำก่อน · แสดง ' + list.length + ' จาก ' + contracts.length + ' รายการ</p></div>' +
+      '<button type="button" class="btn primary" data-action="add">' + ICON.plus + 'เพิ่มสัญญา</button></div>';
+    var chips = CHIPS.map(function (ch) {
+      var n = base.filter(function (c) { return inFilter(c, ch[0]); }).length;
+      return '<button type="button" class="fchip" data-action="filter" data-f="' + ch[0] + '" aria-pressed="' + (ui.f === ch[0]) + '">' + ch[1] + '<span class="n">' + n + '</span></button>';
+    }).join('');
+    var toolbar = '<div class="toolbar2"><div class="search"><label for="q" class="sr">ค้นหาสัญญา</label>' + ICON.search +
+      '<input type="search" id="q" value="' + esc(ui.q) + '" placeholder="ค้นหาชื่อรายการ ผู้ให้บริการ หรือเลขที่" autocomplete="off"></div>' +
+      '<div class="chips" role="group" aria-label="กรองตามความเร่งด่วน" style="margin:0">' + chips + '</div></div>';
+
+    var rows = slice.map(function (c) {
+      var b = bucketOf(c);
+      var warn = c.status === 'Active' && !c.end && c.noExpiry !== 'yes' ? '<div class="warn">ยังไม่มีวันหมดอายุ</div>' : '';
+      return '<div class="crow" role="row">' +
+        '<div class="c-status" role="cell"><span class="ub b-' + b + '">' + BUCKET[b] + '</span></div>' +
+        '<div class="c-main" role="cell"><button type="button" class="link" data-action="view" data-id="' + esc(c.id) + '">' + esc(c.title) + '</button>' +
+          '<div class="sub">' + esc(c.groupName || '—') + (c.auto === 'yes' ? '<span class="autochip">ต่ออัตโนมัติ</span>' : '') + '</div></div>' +
+        '<div class="c-sup" role="cell">' + esc(c.supplier || '—') + '</div>' +
+        '<div class="c-per" role="cell"><div>' + esc(periodText(c)) + '</div>' + warn + '</div>' +
+        '<div class="c-rem' + (b === 'expired' ? ' late' : '') + '" role="cell">' + esc(remainText(c)) + '</div>' +
+        '<div class="c-amt" role="cell">' + moneyOrDash(c.amount) + '</div>' +
+        '<div class="c-act" role="cell">' + actionButtons(c) + '</div></div>';
+    }).join('');
+    var empty = list.length ? '' : '<div class="empty">ไม่พบรายการที่ตรงกับเงื่อนไข ' +
+      '<div><button type="button" class="btn" data-action="clear-filters">ล้างตัวกรอง</button></div></div>';
+    var table = '<div class="ctable" role="table" aria-label="รายการสัญญา MA">' +
+      '<div class="crow chead" role="row"><div role="columnheader">สถานะ</div><div role="columnheader">รายการ</div><div role="columnheader">ผู้ให้บริการ</div><div role="columnheader">ระยะสัญญา</div><div role="columnheader">เหลือเวลา</div><div role="columnheader" style="text-align:right">มูลค่า (฿)</div><div role="columnheader" style="text-align:right">จัดการ</div></div>' +
+      rows + empty +
+      '<div class="pager"><div>แสดง ' + (list.length ? from + 1 : 0) + '–' + (from + slice.length) + ' จาก ' + list.length + ' รายการ</div><div class="pg">' +
+        '<button type="button" class="pgbtn" data-action="page" data-p="' + (ui.page - 1) + '"' + (ui.page === 0 ? ' disabled' : '') + '>ก่อนหน้า</button>' +
+        Array.apply(null, Array(pages)).map(function (_, k) { return '<button type="button" class="pgbtn" data-action="page" data-p="' + k + '"' + (k === ui.page ? ' aria-current="page"' : '') + ' aria-label="หน้า ' + (k + 1) + '">' + (k + 1) + '</button>'; }).join('') +
+        '<button type="button" class="pgbtn" data-action="page" data-p="' + (ui.page + 1) + '"' + (ui.page >= pages - 1 ? ' disabled' : '') + '>ถัดไป</button></div></div></div>';
+    return head + toolbar + table;
+  }
+
+  /* ---------- users ---------- */
+  function viewUsers() {
+    var act = activeUsers().length;
+    var full = act >= maxUsers;
+    var head = '<div class="page-head"><div><h1>ผู้ใช้</h1><p class="sub">ใช้งานอยู่ ' + act + ' จาก ' + maxUsers + ' คน</p></div>' +
+      '<button type="button" class="btn primary" data-action="add-user"' + (full ? ' disabled title="ผู้ใช้ครบแล้ว ปิดใช้งานคนอื่นก่อน"' : '') + '>' + ICON.plus + 'เพิ่มผู้ใช้</button></div>';
+    var note = '<div class="card note-card">ทุกคนเห็น เพิ่ม แก้ไข และต่อสัญญาได้ทุกรายการ · เฉพาะผู้ดูแลระบบ (Admin) ที่ลบสัญญาและจัดการผู้ใช้ได้ · ' +
+      'PIN เก็บแบบเข้ารหัสในสคริปต์ ไม่อยู่ใน Google Sheet</div>';
+    var rows = users.slice().sort(function (a, b) {
+      return (b.active === 'yes') - (a.active === 'yes') || (b.role === 'admin') - (a.role === 'admin') || String(a.name).localeCompare(String(b.name), 'th');
+    }).map(function (u) {
+      var n = renewals.filter(function (r) { return r.by === u.name; }).length;
+      return '<div class="urow' + (u.active === 'yes' ? '' : ' off') + '">' +
+        '<span class="avatar" aria-hidden="true">' + esc(String(u.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
+        '<div style="min-width:0"><div><b>' + esc(u.name) + '</b><span class="role">' + (u.role === 'admin' ? 'Admin' : 'สมาชิก') + '</span>' +
+          (u.active === 'yes' ? '' : '<span class="role off">ปิดใช้งาน</span>') + (me && u.id === me.id ? '<span class="role off">คุณ</span>' : '') + '</div>' +
+        '<div class="un">@' + esc(u.username) + '</div><div class="meta">ต่อสัญญาแล้ว ' + n + ' ครั้ง</div></div>' +
+        '<button type="button" class="icon-btn" data-action="edit-user" data-id="' + esc(u.id) + '" aria-label="แก้ไขผู้ใช้ ' + esc(u.name) + '">' + ICON.edit + '</button></div>';
+    }).join('');
+    return head + note + '<div class="ulist">' + rows + '</div>';
+  }
+
+  function openUserModal(u) {
+    var x = u || { username: '', name: '', role: 'member', active: 'yes' };
+    var self = !!u && !!me && u.id === me.id;
+    var dis = self ? ' disabled' : '';
+    openModal('<h2 id="mT">' + (u ? 'แก้ไขผู้ใช้' : 'เพิ่มผู้ใช้ใหม่') + '</h2>' +
+      '<form id="userForm" data-id="' + esc(u ? u.id : '') + '" novalidate>' +
+        '<div class="two">' +
+          '<div class="field"><label for="u-name">ชื่อที่แสดง <span class="req">*</span></label><input type="text" id="u-name" data-first value="' + esc(x.name) + '" maxlength="60" placeholder="เช่น สมชาย"></div>' +
+          '<div class="field"><label for="u-user">ชื่อผู้ใช้ <span class="req">*</span></label><input type="text" id="u-user" autocapitalize="none" spellcheck="false" value="' + esc(x.username) + '" maxlength="24" placeholder="เช่น somchai"><div class="hint">a-z ตัวเลข . _ - ใช้ตอนเข้าสู่ระบบ</div></div>' +
+        '</div>' +
+        '<div class="field" role="radiogroup" aria-labelledby="l-role"><span class="lbl" id="l-role">สิทธิ์</span><div class="seg two">' +
+          '<label class="seg-o"><input type="radio" name="role" value="member"' + (x.role === 'admin' ? '' : ' checked') + dis + '><span>สมาชิก (แก้ไขและต่อสัญญา)</span></label>' +
+          '<label class="seg-o"><input type="radio" name="role" value="admin"' + (x.role === 'admin' ? ' checked' : '') + dis + '><span>Admin (ลบสัญญา + จัดการผู้ใช้)</span></label>' +
+        '</div></div>' +
+        '<div class="field"><label for="u-pin">' + (u ? 'ตั้ง PIN ใหม่ <span class="opt">(เว้นว่างถ้าไม่เปลี่ยน)</span>' : 'PIN เริ่มต้น <span class="req">*</span>') + '</label>' +
+          '<input type="password" id="u-pin" autocomplete="new-password" maxlength="64"><div class="hint">อย่างน้อย 6 ตัว' + (u ? ' · ตั้ง PIN ใหม่แล้วผู้ใช้จะถูกออกจากระบบทุกเครื่อง' : ' · บอก PIN ให้ผู้ใช้เอง ผู้ใช้เปลี่ยนเองได้ที่ "บัญชีของฉัน"') + '</div></div>' +
+        (u ? '<label class="check" style="margin-bottom:14px"><input type="checkbox" id="u-active"' + (x.active === 'yes' ? ' checked' : '') + dis + '><span>เปิดใช้งาน' + (self ? ' (ปิดบัญชีตัวเองไม่ได้)' : '') + '</span></label>' : '') +
+        '<div class="err" id="u-err" role="alert"></div>' +
+        '<div class="actions"><button type="button" class="btn" data-action="close-modal">ยกเลิก</button><button type="submit" class="btn primary" id="saveBtn">บันทึก</button></div>' +
+      '</form>');
+  }
+
+  async function submitUser(form) {
+    var id = form.getAttribute('data-id');
+    var err = $('#u-err');
+    var name = $('#u-name').value.trim(), username = $('#u-user').value.trim().toLowerCase(), pinv = $('#u-pin').value;
+    err.textContent = '';
+    if (!name) { err.textContent = ERR.bad_name; $('#u-name').focus(); return; }
+    if (!/^[a-z0-9._-]{2,24}$/.test(username)) { err.textContent = ERR.bad_username; $('#u-user').focus(); return; }
+    if ((!id || pinv) && pinv.trim().length < 6) { err.textContent = ERR.weak_pin; $('#u-pin').focus(); return; }
+    var roleEl = form.querySelector('input[name="role"]:checked');
+    var payload = { id: id || undefined, name: name, username: username, role: roleEl ? roleEl.value : 'member' };
+    if (pinv) payload.pin = pinv;
+    var act = $('#u-active');
+    if (id && act && !act.disabled) payload.active = act.checked;
+    var btn = $('#saveBtn'); btn.disabled = true;
+    try {
+      var res = await api('userSave', payload);
+      users = res.users;
+      var mine = userById(me.id); if (mine) me = mine;
+      lastSig = '';
+      closeModal(); toast(id ? 'บันทึกผู้ใช้แล้ว' : 'เพิ่มผู้ใช้แล้ว');
+      render(); refresh();
+    } catch (e) {
+      if (e && e.code === 'bad_token') { toLogin(ERR.bad_token); return; }
+      err.textContent = errText(e); btn.disabled = false;
+    }
+  }
+
+  function openAccountModal() {
+    if (!me) return;
+    openModal('<h2 id="mT">บัญชีของฉัน</h2>' +
+      '<div class="acct"><span class="avatar" aria-hidden="true">' + esc(String(me.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
+      '<div><b>' + esc(me.name) + '</b><span class="role">' + (isAdmin() ? 'Admin' : 'สมาชิก') + '</span><div class="hint">@' + esc(me.username) + '</div></div></div>' +
+      '<hr class="sep"><h3 style="font-size:15px;margin-bottom:10px">เปลี่ยน PIN</h3>' +
+      '<form id="pinForm" novalidate>' +
+        '<div class="field"><label for="pc-old">PIN เดิม</label><input type="password" id="pc-old" data-first autocomplete="current-password" maxlength="64"></div>' +
+        '<div class="two">' +
+          '<div class="field"><label for="pc-new">PIN ใหม่</label><input type="password" id="pc-new" autocomplete="new-password" maxlength="64"><div class="hint">อย่างน้อย 6 ตัว</div></div>' +
+          '<div class="field"><label for="pc-new2">ยืนยัน PIN ใหม่</label><input type="password" id="pc-new2" autocomplete="new-password" maxlength="64"></div>' +
+        '</div>' +
+        '<div class="err" id="pc-err" role="alert"></div>' +
+        '<div class="actions"><button type="button" class="btn" data-action="close-modal">ปิด</button><button type="button" class="btn" data-action="logout">' + ICON.out + 'ออกจากระบบ</button><button type="submit" class="btn primary" id="saveBtn">เปลี่ยน PIN</button></div>' +
+      '</form>');
+  }
+
+  async function submitPin() {
+    var err = $('#pc-err');
+    var o = $('#pc-old').value, n = $('#pc-new').value, n2 = $('#pc-new2').value;
+    err.textContent = '';
+    if (!o) { err.textContent = 'ใส่ PIN เดิมก่อน'; $('#pc-old').focus(); return; }
+    if (n.trim().length < 6) { err.textContent = ERR.weak_pin; $('#pc-new').focus(); return; }
+    if (n !== n2) { err.textContent = 'PIN ใหม่ทั้งสองช่องไม่ตรงกัน'; $('#pc-new2').focus(); return; }
+    var btn = $('#saveBtn'); btn.disabled = true;
+    try {
+      await api('changePin', { oldPin: o, newPin: n });
+      closeModal(); toast('เปลี่ยน PIN แล้ว เครื่องอื่นจะถูกออกจากระบบ');
+    } catch (e) {
+      if (e && e.code === 'bad_token') { toLogin(ERR.bad_token); return; }
+      err.textContent = errText(e); btn.disabled = false;
+    }
+  }
+
+  /* ---------- modals ---------- */
+  function openModal(html, cls) {
+    if (!modalOpen()) lastFocus = document.activeElement;
+    $('#modal').innerHTML = '<div class="overlay"><div class="panel ' + (cls || '') + '" role="dialog" aria-modal="true" aria-labelledby="mT">' + html + '</div></div>';
+    var f = $('#modal').querySelector('[data-first]') || $('#modal').querySelector('input,select,textarea,button');
+    if (f) f.focus();
+  }
+  function closeModal() {
+    $('#modal').innerHTML = '';
+    pendingConfirm = null;
+    if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
+  }
+  function modalOpen() { return !!$('#modal').firstChild; }
+  function openConfirm(title, body, okLabel, onOk) {
+    pendingConfirm = onOk;
+    openModal('<h2 id="mT">' + esc(title) + '</h2><p style="margin-bottom:18px;color:var(--ink-2)">' + esc(body) + '</p>' +
+      '<div class="actions"><button type="button" class="btn" data-action="close-modal" data-first>ยกเลิก</button><button type="button" class="btn danger" data-action="confirm-ok">' + esc(okLabel) + '</button></div>');
+  }
+
+  function dlRow(k, v) { return '<dt>' + k + '</dt><dd>' + v + '</dd>'; }
+
+  function openViewModal(c) {
+    var b = bucketOf(c);
+    var hist = historyOf(c.id);
+    var reviewed = c.reviewBy ? esc(c.reviewBy) + (c.reviewAt ? ' · ' + esc(fmtLong(c.reviewAt)) : '') : '<span class="muted">ยังไม่เคยบันทึก</span>';
+    var docRow = c.docPath ? esc(c.docPath) : '<span class="muted">ยังไม่มี</span>';
+    openModal('<h2 id="mT">' + esc(c.title) + '</h2>' +
+      '<p style="margin:-8px 0 14px"><span class="ub b-' + b + '">' + esc(BUCKET[b]) + '</span> <span class="muted" style="margin-left:6px">' + esc(whenText(c)) + '</span></p>' +
+      '<dl class="dl">' +
+        dlRow('สัญญา / กลุ่ม', esc(c.groupName || '—') + (c.auto === 'yes' ? '<span class="autochip">ต่ออัตโนมัติ</span>' : '')) +
+        dlRow('ผู้ให้บริการ', esc(c.supplier || '—')) +
+        dlRow('เลขที่ / Serial', esc(c.serial || '—')) +
+        dlRow('ใบเสนอราคา / PO', esc(c.refNo || '—')) +
+        dlRow('ระยะสัญญา', esc((c.start ? fmtLong(c.start) : '—') + ' – ' + (c.end ? fmtLong(c.end) : (c.noExpiry === 'yes' ? 'ไม่มีวันหมดอายุ' : '—')))) +
+        dlRow('จำนวน × ราคา', esc((c.qty || '—') + ' × ' + (num(c.unit) ? fmtNum(num(c.unit)) : '—'))) +
+        dlRow('มูลค่า', num(c.amount) ? '<b>' + money(c.amount) + '</b>' : '—') +
+        dlRow('ตรวจสอบล่าสุด', reviewed) +
+        dlRow('ที่อยู่เอกสาร', docRow) +
+        dlRow('หมายเหตุ', c.note ? '<span style="white-space:pre-wrap">' + esc(c.note) + '</span>' : '—') +
+      '</dl>' +
+      '<h3 style="font-size:15px;margin:18px 0 0">ประวัติการต่อสัญญา</h3>' +
+      (hist.length ? '<ul class="hist">' + hist.map(function (h) {
+        return '<li><div class="h1">' + esc(fmtLong(h.oldStart)) + ' – ' + esc(fmtLong(h.oldEnd)) + ' → ' + esc(fmtLong(h.newStart)) + ' – ' + esc(fmtLong(h.newEnd)) + '</div>' +
+          '<div class="h2">มูลค่า ' + (num(h.oldAmount) ? money(h.oldAmount) : '—') + ' → ' + (num(h.newAmount) ? money(h.newAmount) : '—') +
+          (h.refNo ? ' · ' + esc(h.refNo) : '') + ' · ต่อโดย ' + esc(h.by) + ' เมื่อ ' + esc(fmtStamp(h.at)) + (h.note ? ' · ' + esc(h.note) : '') + '</div></li>';
+      }).join('') + '</ul>' : '<p class="hint" style="margin-top:6px">ยังไม่มีประวัติ — จะเก็บไว้ที่นี่ทุกครั้งที่กด “ต่อสัญญา”</p>') +
+      '<div class="row-actions"><button type="button" class="btn" data-action="close-modal">ปิด</button>' +
+        '<button type="button" class="btn" data-action="edit" data-id="' + esc(c.id) + '">' + ICON.edit + 'แก้ไข</button>' +
+        '<button type="button" class="btn primary" data-action="renew" data-id="' + esc(c.id) + '" data-first>' + (c.status === 'Ended' ? 'เปิดใหม่' : 'ต่อสัญญา') + '</button></div>', 'mid');
+  }
+
+  function optionsFor(field) {
+    var seen = {}, out = [];
+    contracts.forEach(function (c) { var v = String(c[field] || '').trim(); if (v && !seen[v]) { seen[v] = 1; out.push(v); } });
+    return out.sort(function (a, b) { return a.localeCompare(b, 'th'); });
+  }
+
+  function openEditModal(c) {
+    var x = c || { title: '', groupName: '', supplier: '', serial: '', refNo: '', start: ymd(today()), end: '', qty: '1', unit: '', amount: '', status: 'Active', noExpiry: '', auto: '', docPath: '', note: '' };
+    if (!c) x.end = addYear(x.start);
+    openModal('<h2 id="mT">' + (c ? 'แก้ไขสัญญา' : 'เพิ่มสัญญา') + '</h2>' +
+      '<form id="contractForm" data-id="' + esc(c ? c.id : '') + '" novalidate>' +
+        '<div class="field"><label for="f-title">ชื่อรายการ <span class="req">*</span></label><input type="text" id="f-title" data-first value="' + esc(x.title) + '" maxlength="200" placeholder="เช่น ESET PROTECT – PD (85 License)"></div>' +
+        '<div class="two">' +
+          '<div class="field"><label for="f-group">สัญญา / กลุ่ม</label><input type="text" id="f-group" list="dl-group" value="' + esc(x.groupName) + '" maxlength="80"><datalist id="dl-group">' + optionsFor('groupName').map(function (v) { return '<option value="' + esc(v) + '">'; }).join('') + '</datalist></div>' +
+          '<div class="field"><label for="f-sup">ผู้ให้บริการ</label><input type="text" id="f-sup" list="dl-sup" value="' + esc(x.supplier) + '" maxlength="120"><datalist id="dl-sup">' + optionsFor('supplier').map(function (v) { return '<option value="' + esc(v) + '">'; }).join('') + '</datalist></div>' +
+        '</div>' +
+        '<div class="two">' +
+          '<div class="field"><label for="f-serial">เลขที่สัญญา / Serial</label><input type="text" id="f-serial" value="' + esc(x.serial) + '" maxlength="120"></div>' +
+          '<div class="field"><label for="f-ref">เลขที่ใบเสนอราคา / PO</label><input type="text" id="f-ref" value="' + esc(x.refNo) + '" maxlength="120"></div>' +
+        '</div>' +
+        '<div class="two">' +
+          '<div class="field"><label for="f-start">วันเริ่มสัญญา</label><input type="date" id="f-start" value="' + esc(x.start) + '"></div>' +
+          '<div class="field"><label for="f-end">วันสิ้นสุดสัญญา</label><input type="date" id="f-end" value="' + esc(x.end) + '"' + (x.noExpiry === 'yes' ? ' disabled' : '') + '></div>' +
+        '</div>' +
+        '<label class="check" style="margin:-4px 0 14px"><input type="checkbox" id="f-noexp"' + (x.noExpiry === 'yes' ? ' checked' : '') + '><span>ไม่มีวันหมดอายุ (เช่น ซื้อขาด / จ่ายตามการใช้งาน)</span></label>' +
+        '<div class="three">' +
+          '<div class="field"><label for="f-qty">จำนวน</label><input type="text" inputmode="decimal" class="num" id="f-qty" value="' + esc(x.qty) + '"></div>' +
+          '<div class="field"><label for="f-unit">ราคาต่อหน่วย (฿)</label><input type="text" inputmode="decimal" class="num" id="f-unit" value="' + esc(x.unit) + '"></div>' +
+          '<div class="field"><label for="f-amount">มูลค่ารวม (฿)</label><input type="text" inputmode="decimal" class="num" id="f-amount" value="' + esc(x.amount) + '"><div class="hint">คำนวณจากจำนวน × ราคา แก้เองได้</div></div>' +
+        '</div>' +
+        '<div class="two">' +
+          '<div class="field"><label for="f-status">สถานะ</label><select class="f" id="f-status"><option value="Active"' + (x.status === 'Ended' ? '' : ' selected') + '>ใช้งานอยู่</option><option value="Ended"' + (x.status === 'Ended' ? ' selected' : '') + '>ปิดสัญญาแล้ว</option></select></div>' +
+          '<div class="field"><span class="lbl">ต่ออัตโนมัติ</span><label class="check" style="min-height:40px"><input type="checkbox" id="f-auto"' + (x.auto === 'yes' ? ' checked' : '') + '><span>ผู้ให้บริการต่อให้เองทุกปี</span></label></div>' +
+        '</div>' +
+        '<div class="field"><label for="f-doc">ที่อยู่เอกสารสัญญา</label><input type="text" id="f-doc" value="' + esc(x.docPath) + '" maxlength="500" placeholder="วางพาธไฟล์ในเครื่อง หรือลิงก์ Google Drive"></div>' +
+        '<div class="field"><label for="f-note">หมายเหตุ</label><textarea id="f-note" rows="3" maxlength="1500">' + esc(x.note) + '</textarea></div>' +
+        '<div class="err" id="f-err" role="alert"></div>' +
+        '<div class="actions' + (c && isAdmin() ? ' spread' : '') + '" style="' + (c && isAdmin() ? 'justify-content:space-between' : '') + '">' +
+          (c && isAdmin() ? '<button type="button" class="btn ghost-danger" data-action="del" data-id="' + esc(c.id) + '">ลบสัญญา</button>' : '') +
+          '<span style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn" data-action="close-modal">ยกเลิก</button><button type="submit" class="btn primary" id="saveBtn">บันทึก</button></span></div>' +
+      '</form>', 'mid');
+  }
+
+  async function submitContract(form) {
+    var id = form.getAttribute('data-id');
+    var err = $('#f-err');
+    err.textContent = '';
+    var title = $('#f-title').value.trim();
+    if (!title) { err.textContent = ERR.need_title; $('#f-title').focus(); return; }
+    var noexp = $('#f-noexp').checked;
+    var start = $('#f-start').value, end = noexp ? '' : $('#f-end').value;
+    if (start && end && end < start) { err.textContent = ERR.end_before_start; $('#f-end').focus(); return; }
+    var row = {
+      title: title, groupName: $('#f-group').value.trim(), supplier: $('#f-sup').value.trim(),
+      serial: $('#f-serial').value.trim(), refNo: $('#f-ref').value.trim(),
+      start: start, end: end, qty: $('#f-qty').value.trim(), unit: $('#f-unit').value.trim(), amount: $('#f-amount').value.trim(),
+      status: $('#f-status').value, noExpiry: noexp ? 'yes' : '', auto: $('#f-auto').checked ? 'yes' : '',
+      docPath: $('#f-doc').value.trim(), note: $('#f-note').value.trim()
+    };
+    if (id) row.id = id;
+    var btn = $('#saveBtn'); btn.disabled = true;
+    var ok = await safe(async function () {
+      var res = await api('upsert', { row: row });
+      upsertLocal(contracts, res.row);
+    }, id ? 'บันทึกแล้ว' : 'เพิ่มสัญญาแล้ว');
+    if (ok) closeModal(); else btn.disabled = false;
+  }
+
+  function openRenewModal(c) {
+    var oldEnd = parseYmd(c.end);
+    var start = oldEnd ? addDays(oldEnd, 1) : today();
+    if (!oldEnd || (today() - start) / 86400000 > 60) start = today();   // long overdue: count from today
+    var startS = ymd(start), endS = addYear(startS);
+    var reviewed = c.reviewBy ? esc(c.reviewBy) + (c.reviewAt ? ' · ' + esc(fmtShort(c.reviewAt)) : '') : '<span class="muted">ยังไม่เคยบันทึก</span>';
+    var b = bucketOf(c);
+    var lastPeriod = (c.start ? fmtLong(c.start) : '—') + ' – ' + (c.end ? fmtLong(c.end) : '—');
+    openModal('<h2 id="mT">' + (c.status === 'Ended' ? 'เปิดสัญญาใหม่ / ต่อสัญญา' : 'ต่อสัญญา') + '</h2>' +
+      '<p class="muted" style="margin:-8px 0 14px">ระบบเติมช่วงเวลาและราคาจากปีก่อนให้แล้ว แก้เฉพาะที่เปลี่ยน</p>' +
+      '<div class="rn"><section class="rn-cur" aria-label="สัญญาปัจจุบัน"><h3>สัญญาปัจจุบัน</h3>' +
+        '<p style="margin-bottom:8px"><span class="ub b-' + b + '">' + esc(whenText(c)) + '</span></p>' +
+        '<div style="font-weight:600">' + esc(c.title) + '</div><div class="hint" style="margin-bottom:10px">' + esc(c.groupName || '') + '</div>' +
+        '<dl class="dl" style="grid-template-columns:96px minmax(0,1fr);font-size:13.5px">' +
+          dlRow('ผู้ให้บริการ', esc(c.supplier || '—')) + dlRow('เลขที่ / Serial', esc(c.serial || '—')) +
+          dlRow('ระยะสัญญา', esc(lastPeriod)) + dlRow('จำนวน × ราคา', esc((c.qty || '—') + ' × ' + (num(c.unit) ? fmtNum(num(c.unit)) : '—'))) +
+          dlRow('มูลค่า', num(c.amount) ? '<b>' + money(c.amount) + '</b>' : '—') + dlRow('ตรวจสอบล่าสุด', reviewed) +
+        '</dl></section>' +
+      '<form id="renewForm" class="rn-form" data-id="' + esc(c.id) + '" data-old="' + esc(num(c.amount)) + '" novalidate>' +
+        '<div class="two">' +
+          '<div class="field"><label for="rn-start">วันเริ่มสัญญาใหม่</label><input type="date" id="rn-start" data-first value="' + esc(startS) + '"></div>' +
+          '<div class="field"><label for="rn-end">วันสิ้นสุดสัญญาใหม่</label><input type="date" id="rn-end" value="' + esc(endS) + '"></div>' +
+        '</div><div class="hint" style="margin:-8px 0 14px">เติมให้อัตโนมัติ: เริ่มวันถัดจากวันสิ้นสุดเดิม และยาว 1 ปี</div>' +
+        '<div class="three">' +
+          '<div class="field"><label for="rn-qty">จำนวน</label><input type="text" inputmode="decimal" class="num" id="rn-qty" value="' + esc(c.qty) + '"></div>' +
+          '<div class="field"><label for="rn-unit">ราคาต่อหน่วย (฿)</label><input type="text" inputmode="decimal" class="num" id="rn-unit" value="' + esc(c.unit) + '"></div>' +
+          '<div class="field"><label for="rn-amount">มูลค่ารวม (฿)</label><input type="text" inputmode="decimal" class="num" id="rn-amount" value="' + esc(c.amount) + '"><div class="hint" id="rn-delta"></div></div>' +
+        '</div>' +
+        '<div class="two">' +
+          '<div class="field"><label for="rn-ref">เลขที่ใบเสนอราคา / PO ใหม่</label><input type="text" id="rn-ref" maxlength="120" placeholder="กรอกเลขที่เอกสาร"></div>' +
+          '<div class="field"><label for="rn-serial">เลขที่สัญญา / Serial</label><input type="text" id="rn-serial" maxlength="120" value="' + esc(c.serial) + '"></div>' +
+        '</div>' +
+        '<div class="field"><label for="rn-doc">ที่อยู่เอกสารสัญญา</label><input type="text" id="rn-doc" maxlength="500" value="' + esc(c.docPath) + '" placeholder="วางพาธไฟล์ในเครื่อง หรือลิงก์ Google Drive"></div>' +
+        '<div class="field"><label for="rn-note">หมายเหตุการต่อสัญญา</label><textarea id="rn-note" rows="2" maxlength="800" placeholder="เช่น เงื่อนไขที่เปลี่ยน หรือสิ่งที่ต้องติดตาม"></textarea></div>' +
+        '<div class="infobox"><b>เมื่อกดยืนยัน</b><ul>' +
+          '<li>เก็บช่วงเดิม ' + esc(c.start ? fmtShort(c.start) : '—') + ' – ' + esc(c.end ? fmtShort(c.end) : '—') + (num(c.amount) ? ' (' + money(c.amount) + ')' : '') + ' ไว้เป็นประวัติการต่อสัญญา</li>' +
+          '<li>รายการนี้เปลี่ยนเป็นช่วงใหม่ และสถานะเป็นใช้งานอยู่</li>' +
+          '<li>บันทึกว่า ' + esc(me ? me.name : '') + ' ตรวจสอบเมื่อ ' + esc(fmtLong(ymd(today()))) + '</li></ul></div>' +
+        '<div class="err" id="rn-err" role="alert"></div>' +
+        '<div class="actions"><button type="button" class="btn" data-action="close-modal">ยกเลิก</button><button type="submit" class="btn primary" id="saveBtn">ยืนยันต่อสัญญา</button></div>' +
+      '</form></div>', 'wide');
+    updateDelta();
+  }
+
+  function updateDelta() {
+    var form = $('#renewForm'); if (!form) return;
+    var el = $('#rn-delta'); if (!el) return;
+    var old = Number(form.getAttribute('data-old')) || 0;
+    var cur = num($('#rn-amount').value);
+    if (!old || !cur) { el.textContent = ''; return; }
+    var diff = cur - old;
+    if (Math.abs(diff) < 0.005) el.textContent = 'เท่าปีก่อน';
+    else el.textContent = (diff > 0 ? 'เพิ่มขึ้น ' : 'ลดลง ') + fmtNum(Math.abs(diff / old * 100)) + '% (' + (diff > 0 ? '+' : '−') + fmtNum(Math.abs(diff)) + ' บาท)';
+  }
+
+  async function submitRenew(form) {
+    var id = form.getAttribute('data-id');
+    var err = $('#rn-err');
+    err.textContent = '';
+    var start = $('#rn-start').value, end = $('#rn-end').value;
+    if (!start || !end) { err.textContent = ERR.need_dates; (start ? $('#rn-end') : $('#rn-start')).focus(); return; }
+    if (end < start) { err.textContent = ERR.end_before_start; $('#rn-end').focus(); return; }
+    var payload = {
+      id: id, start: start, end: end, qty: $('#rn-qty').value.trim(), unit: $('#rn-unit').value.trim(), amount: $('#rn-amount').value.trim(),
+      refNo: $('#rn-ref').value.trim(), serial: $('#rn-serial').value.trim(), docPath: $('#rn-doc').value.trim(), note: $('#rn-note').value.trim()
+    };
+    var btn = $('#saveBtn'); btn.disabled = true;
+    var title = (findContract(id) || {}).title || '';
+    var ok = await safe(async function () {
+      var res = await api('renew', payload);
+      upsertLocal(contracts, res.row);
+      renewals.push(res.renewal);
+    }, 'ต่อสัญญา "' + title + '" แล้ว');
+    if (ok) closeModal(); else btn.disabled = false;
+  }
+
+  /* ---------- sign-in ---------- */
+  async function doLogin() {
+    var err = $('#lg-err'), btn = $('#lg-btn');
+    var u = $('#lg-user').value.trim(), p = $('#lg-pin').value;
+    lockError = '';
+    if (!u || !p) { err.textContent = 'ใส่ชื่อผู้ใช้และ PIN ก่อน'; return; }
+    err.textContent = ''; btn.disabled = true;
+    try {
+      var res = await api('login', { username: u, pin: p });
+      signedIn(res, u.toLowerCase());
+    } catch (e) {
+      err.textContent = errText(e); btn.disabled = false;
+      $('#lg-pin').value = ''; $('#lg-pin').focus();
+    }
+  }
+  async function doSetup() {
+    var err = $('#su-err'), btn = $('#su-btn');
+    var key = $('#su-key').value, u = $('#su-user').value.trim().toLowerCase(), nm = $('#su-name').value.trim();
+    var p = $('#su-pin').value, p2 = $('#su-pin2').value;
+    err.textContent = '';
+    if (!key) { err.textContent = 'ใส่รหัสตั้งค่าก่อน'; $('#su-key').focus(); return; }
+    if (!/^[a-z0-9._-]{2,24}$/.test(u)) { err.textContent = ERR.bad_username; $('#su-user').focus(); return; }
+    if (!nm) { err.textContent = ERR.bad_name; $('#su-name').focus(); return; }
+    if (p.trim().length < 6) { err.textContent = ERR.weak_pin; $('#su-pin').focus(); return; }
+    if (p !== p2) { err.textContent = 'PIN ใหม่ทั้งสองช่องไม่ตรงกัน'; $('#su-pin2').focus(); return; }
+    btn.disabled = true;
+    try {
+      var res = await api('setup', { key: key, username: u, name: nm, pin: p });
+      signedIn(res, u);
+      toast('สร้างบัญชีผู้ดูแลระบบแล้ว');
+    } catch (e) {
+      if (e && e.code === 'already_setup') { lockError = ERR.already_setup; loadMode(); return; }
+      err.textContent = errText(e); btn.disabled = false;
+    }
+  }
+
+  /* ---------- documents ---------- */
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text);
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy') ? resolve() : reject(new Error('copy')); } catch (e) { reject(e); } finally { document.body.removeChild(ta); }
+    });
+  }
+  function openDoc(c) {
+    var p = String(c.docPath || '').trim();
+    if (!p) return;
+    if (isUrl(p)) { window.open(p, '_blank', 'noopener'); return; }
+    copyText(p).then(function () { toast('คัดลอกที่อยู่เอกสารแล้ว — วางใน File Explorer ได้เลย'); },
+      function () { toast('คัดลอกไม่ได้ ที่อยู่คือ: ' + p); });
+  }
+
+  /* ---------- events ---------- */
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (t.classList && t.classList.contains('overlay')) { closeModal(); return; }
+    var el = t.closest ? t.closest('[data-action]') : null;
+    if (!el || el.tagName === 'SELECT') return;
+    var a = el.getAttribute('data-action');
+    var id = el.getAttribute('data-id');
+    var c = id ? findContract(id) : null;
+
+    if (a === 'go-filter') { ui.f = el.getAttribute('data-f'); ui.q = ''; ui.page = 0; if (location.hash !== '#contracts') location.hash = 'contracts'; else render(); }
+    else if (a === 'filter') { ui.f = el.getAttribute('data-f'); ui.page = 0; render(); }
+    else if (a === 'clear-filters') { ui.f = 'all'; ui.q = ''; ui.page = 0; render(); }
+    else if (a === 'page') { var p = parseInt(el.getAttribute('data-p'), 10); if (!isNaN(p) && p >= 0) { ui.page = p; render(); } }
+    else if (a === 'pick-month') { ui.month = parseInt(el.getAttribute('data-i'), 10) || 0; render(); }
+    else if (a === 'add') openEditModal(null);
+    else if (a === 'view') { if (c) openViewModal(c); }
+    else if (a === 'edit') { if (c) openEditModal(c); }
+    else if (a === 'renew') { if (c) openRenewModal(c); }
+    else if (a === 'doc') { if (c) openDoc(c); }
+    else if (a === 'del') {
+      if (c) openConfirm('ลบสัญญานี้?', '"' + c.title + '" และประวัติการต่อสัญญาของรายการนี้จะถูกลบถาวร (ถ้าแค่เลิกใช้ ให้เปลี่ยนสถานะเป็น “ปิดสัญญาแล้ว” แทน)', 'ลบสัญญา', async function () {
+        var ok = await safe(async function () {
+          await api('remove', { id: id });
+          contracts = contracts.filter(function (x) { return x.id !== id; });
+          renewals = renewals.filter(function (x) { return x.contractId !== id; });
+        }, 'ลบสัญญาแล้ว');
+        if (ok) closeModal();
+      });
+    }
+    else if (a === 'confirm-ok') { var fn = pendingConfirm; if (fn) { el.disabled = true; fn(); } }
+    else if (a === 'close-modal') closeModal();
+    else if (a === 'retry') { syncError = ''; if (token) { auth = 'checking'; render(); refresh(); } else loadMode(); }
+    else if (a === 'logout') logout();
+    else if (a === 'account') openAccountModal();
+    else if (a === 'add-user') { if (isAdmin()) openUserModal(null); }
+    else if (a === 'edit-user') { var eu = userById(id); if (eu && isAdmin()) openUserModal(eu); }
+  });
+
+  document.addEventListener('input', function (e) {
+    var id = e.target.id;
+    if (id === 'q') { ui.q = e.target.value; ui.page = 0; render(); return; }
+    // amount follows quantity x price until someone types in the amount box
+    var pre = id === 'f-qty' || id === 'f-unit' ? 'f-' : (id === 'rn-qty' || id === 'rn-unit' ? 'rn-' : '');
+    if (pre) {
+      var amt = document.getElementById(pre + 'amount');
+      if (amt && amt.getAttribute('data-manual') !== '1') {
+        var q = num($('#' + pre + 'qty').value), u = num($('#' + pre + 'unit').value);
+        if (q && u) amt.value = String(Math.round(q * u * 100) / 100);
+      }
+      if (pre === 'rn-') updateDelta();
+    } else if (id === 'f-amount' || id === 'rn-amount') {
+      e.target.setAttribute('data-manual', '1');
+      if (id === 'rn-amount') updateDelta();
+    } else if (id === 'rn-start') {
+      var endEl = $('#rn-end');
+      if (endEl && endEl.getAttribute('data-manual') !== '1') endEl.value = addYear(e.target.value);
+    } else if (id === 'rn-end') {
+      e.target.setAttribute('data-manual', '1');
+    }
+  });
+
+  document.addEventListener('change', function (e) {
+    var id = e.target.id;
+    if (id === 'f-noexp') {
+      var endEl = $('#f-end');
+      endEl.disabled = e.target.checked;
+      if (e.target.checked) endEl.value = '';
+      else if (!endEl.value && $('#f-start').value) endEl.value = addYear($('#f-start').value);
+    } else if (id === 'f-start') {
+      var fe = $('#f-end');
+      if (fe && !fe.disabled && !fe.value) fe.value = addYear(e.target.value);
+    }
+  });
+
+  document.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var id = e.target.id;
+    if (id === 'loginForm') doLogin();
+    else if (id === 'setupForm') doSetup();
+    else if (id === 'userForm') submitUser(e.target);
+    else if (id === 'pinForm') submitPin();
+    else if (id === 'contractForm') submitContract(e.target);
+    else if (id === 'renewForm') submitRenew(e.target);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (!modalOpen()) return;
+    if (e.key === 'Escape') { closeModal(); return; }
+    if (e.key === 'Tab') {
+      var f = $('#modal').querySelectorAll('input:not([type=radio]):not([disabled]),select,textarea,button:not([disabled]),input[type=radio]:checked');
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  });
+
+  function route() {
+    var h = location.hash.replace('#', '');
+    ui.view = VIEWS.indexOf(h) >= 0 ? h : 'dashboard';
+    render();
+  }
+  window.addEventListener('hashchange', route);
+
+  /* ---------- start ---------- */
+  function init() {
+    token = readTok();
+    route();
+    if (token) refresh(); else loadMode();
+    setInterval(function () { if (auth === 'ok' && !document.hidden) refresh(); }, POLL_MS);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && auth === 'ok') refresh(); });
+  }
+  init();
+})();
+</script>
+</body>
+</html>
