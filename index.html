@@ -459,6 +459,71 @@ select.f{appearance:auto}
 input.code{text-transform:uppercase;letter-spacing:.14em;font-weight:600}
 input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:400}
 
+/* PDF attachment box (renew / edit / add forms) */
+.pdfbox{border:1px dashed var(--line);border-radius:12px;padding:12px 14px;margin-bottom:16px;background:var(--bg)}
+.pdfbox-h{margin-bottom:8px}
+.pdfbox-t{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px}
+.pdfdrop{display:flex;align-items:center;gap:8px 14px;flex-wrap:wrap;border-radius:10px;padding:8px;border:1px solid transparent}
+.pdfdrop.over{border-color:var(--accent);background:var(--accent-soft)}
+.pdfdrop.has{justify-content:space-between;background:var(--surface);border-color:var(--line)}
+.pdfchip{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 200px}
+.pdfchip .nm{font-weight:500;overflow-wrap:anywhere}
+.pdfchip .sz{color:var(--ink-3);font-size:12.5px;white-space:nowrap}
+.pdfbtns{display:flex;gap:6px;flex-wrap:wrap}
+.pdfai{margin-top:10px;align-items:flex-start}
+.pdfai input{margin-top:3px;flex:none}
+.pdfst{margin:10px 0 0;font-size:13.5px;color:var(--ink-2);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pdfst.bad{display:block;color:var(--bad);background:var(--bad-bg);border-radius:10px;padding:10px 12px}
+.pdfst.bad .muted{color:inherit;opacity:.85}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite;flex:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pdfres{margin-top:10px;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.pdfres-h{display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--done)}
+.pdfsum{margin:10px 0 4px;padding:8px 12px;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink);overflow-wrap:anywhere}
+.pdfres-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:8px}
+.pdfres-list li{display:grid;grid-template-columns:128px minmax(0,1fr) auto auto;gap:4px 10px;align-items:center;font-size:13.5px}
+.pdfres-list .k{color:var(--ink-3)}
+.pdfres-list .v{font-weight:500;overflow-wrap:anywhere}
+.pdfres-list .st{font-size:12px;color:var(--ink-3)}
+.pdfres-list .st.ok{color:var(--done)}
+.pdfres-list .st.warn{color:var(--review)}
+input.ai-filled,textarea.ai-filled{background:var(--accent-soft);border-color:var(--accent)}
+input[type=checkbox].ai-filled{outline:2px solid var(--accent);outline-offset:2px}
+input:disabled{opacity:.7;cursor:not-allowed}
+
+/* settings page */
+.st-wrap{display:grid;gap:16px;max-width:860px}
+.st-card{display:grid;gap:12px}
+.st-card h2{font-size:17px}
+.st-card .field{margin-bottom:0}
+.st-state{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:var(--bg);font-size:14px;color:var(--ink-2)}
+.st-state svg{flex:none}
+.st-state.ok{background:var(--done-bg);color:var(--done)}
+.st-state.warn{background:var(--review-bg);color:var(--review)}
+.st-state.bad{background:var(--bad-bg);color:var(--bad)}
+.st-help{margin:0;padding-left:20px;display:grid;gap:4px;font-size:13px;color:var(--ink-2)}
+.st-prov[hidden]{display:none}
+.st-actions{margin-top:0}
+.st-test{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.st-test li{display:flex;gap:8px;align-items:flex-start;padding:8px 12px;border-radius:10px;font-size:14px}
+.st-test li svg{flex:none;margin-top:3px}
+.st-test li.ok{background:var(--done-bg);color:var(--done)}
+.st-test li.bad{background:var(--bad-bg);color:var(--bad)}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12px;overflow-wrap:anywhere;display:block;margin-top:4px;opacity:.85}
+.st-first{max-width:860px;margin-top:16px}
+.st-first summary{cursor:pointer;font-weight:600}
+.st-first[open] summary{margin-bottom:10px}
+.err-card{background:var(--bad-bg);color:var(--bad)}
+@media (max-width:640px){
+  .pdfres-list{gap:0}
+  .pdfres-list li{grid-template-columns:92px minmax(0,1fr);gap:0 10px;padding:7px 0;border-top:1px solid var(--line)}
+  .pdfres-list li:first-child{border-top:0}
+  .pdfres-list .k{grid-column:1;grid-row:1}
+  .pdfres-list .v{grid-column:2;grid-row:1}
+  .pdfres-list .st{grid-column:2;grid-row:2}
+  .pdfres-list .btn{grid-column:2;grid-row:3;justify-self:start;margin-top:6px}
+}
+
 </style>
 </head>
 <body>
@@ -492,7 +557,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
 
   /* ---------- constants ---------- */
   var MON_S = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-  var VIEWS = ['dashboard', 'contracts', 'users'];
+  var VIEWS = ['dashboard', 'contracts', 'users', 'settings'];
   var PAGE = 12;
   var BUCKET = {
     expired: 'หมดอายุแล้ว', d30: 'ด่วน ≤ 30 วัน', d90: 'ใกล้หมด 31–90', d365: '91–365 วัน',
@@ -516,7 +581,8 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     xc: I('<circle cx="12" cy="12" r="9"/><path d="m9 9 6 6M15 9l-6 6"/>', 1.8),
     clock: I('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>', 1.8),
     hour: I('<path d="M6 3h12M6 21h12M7 3v4l5 5 5-5V3M7 21v-4l5-5 5 5v4"/>', 1.8),
-    cal: I('<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>', 1.8)
+    cal: I('<rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>', 1.8),
+    clip: I('<path d="M21.4 11 12.2 20.2a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5"/>', 1.9)
   };
   var TILES = [
     ['expired', 'หมดอายุแล้ว', ICON.xc],
@@ -532,7 +598,8 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
   var NAVICON = {
     dashboard: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z',
     contracts: 'M6 3h8l4 4v14H6z M14 3v4h4 M9 13h6 M9 17h6',
-    users: 'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1 M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M21 20v-1a4 4 0 0 0-3-3.9 M16 4.1a3.5 3.5 0 0 1 0 6.8'
+    users: 'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1 M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M21 20v-1a4 4 0 0 0-3-3.9 M16 4.1a3.5 3.5 0 0 1 0 6.8',
+    settings: 'M4 7h9 M17 7h3 M4 17h3 M11 17h9 M15 4.5v5 M9 14.5v5'
   };
   var MARK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="m9 14.5 2 2 4-4.5"/></svg>';
   function lockBrand() {
@@ -555,6 +622,8 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
   var contracts = [];
   var renewals = [];
   var ui = { view: 'dashboard', f: 'all', q: '', page: 0, month: 0 };
+  var feat = null;   // PDF features reported by the server: {folder, ai, provider, maxMb}; null = the server is too old to have them
+  var settings = null, settingsLoading = false, settingsKeep = false, settingsMsg = '';
   var lastFocus = null, pendingConfirm = null, toastTimer = null;
 
   /* ---------- helpers ---------- */
@@ -680,9 +749,9 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
   function readUserHint() { try { return localStorage.getItem(USER_KEY) || ''; } catch (e) { return ''; } }
   function saveUserHint(u) { try { if (u) localStorage.setItem(USER_KEY, u); } catch (e) { /* storage blocked */ } }
 
-  async function api(action, payload) {
+  async function api(action, payload, ms) {
     var ctl = new AbortController();
-    var timer = setTimeout(function () { ctl.abort(); }, 25000);
+    var timer = setTimeout(function () { ctl.abort(); }, ms || 25000);
     try {
       var res = await fetch(API_URL, {
         method: 'POST',
@@ -725,7 +794,27 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     bad_date: 'วันที่ไม่ถูกต้อง',
     bad_number: 'ตัวเลขไม่ถูกต้อง',
     bad_status: 'สถานะไม่ถูกต้อง',
-    end_before_start: 'วันสิ้นสุดต้องไม่ก่อนวันเริ่ม'
+    end_before_start: 'วันสิ้นสุดต้องไม่ก่อนวันเริ่ม',
+    unknown_action: 'สคริปต์ฝั่ง Google ยังเป็นเวอร์ชันเก่า ต้อง deploy เวอร์ชันใหม่ก่อน',
+    need_auth: 'สคริปต์ยังไม่ได้รับสิทธิ์ใช้ Drive / อินเทอร์เน็ต — เจ้าของสคริปต์ต้องกดอนุญาตสิทธิ์ครั้งเดียว (ดูขั้นตอนในหน้า “ตั้งค่า”)',
+    no_folder: 'ยังไม่ได้ตั้งค่าโฟลเดอร์เก็บไฟล์ (Admin ตั้งได้ที่เมนู “ตั้งค่า”)',
+    bad_folder: 'ลิงก์โฟลเดอร์ไม่ถูกต้อง — ต้องเป็นลิงก์ของ “โฟลเดอร์” ใน Google Drive (มี /folders/ ในลิงก์)',
+    folder_denied: 'เข้าโฟลเดอร์ Drive นี้ไม่ได้ หรือเขียนไฟล์ลงไม่ได้ — เช็กว่าบัญชีเจ้าของสคริปต์มีสิทธิ์แก้ไขโฟลเดอร์',
+    no_file: 'ยังไม่มีไฟล์',
+    not_pdf: 'ไฟล์นี้ไม่ใช่ PDF',
+    file_too_big: 'ไฟล์ใหญ่เกินไป ลดขนาดไฟล์ก่อน',
+    no_key: 'ยังไม่ได้ใส่คีย์ AI (Admin ตั้งได้ที่เมนู “ตั้งค่า”)',
+    bad_key: 'คีย์ AI ไม่ถูกรูปแบบ (ต้องเป็นตัวอักษรอังกฤษ/ตัวเลข ไม่มีช่องว่าง)',
+    bad_provider: 'เลือกผู้ให้บริการ AI ไม่ถูกต้อง',
+    bad_model: 'ชื่อโมเดลไม่ถูกต้อง',
+    ai_limit: 'วันนี้ใช้ AI อ่านไฟล์ครบโควตาแล้ว (กันค่าใช้จ่ายบาน) กรอกเองหรือลองใหม่พรุ่งนี้',
+    ai_key_invalid: 'คีย์ AI ใช้ไม่ได้ (ผิด หมดอายุ หรือไม่มีเครดิต) — Admin ตรวจที่เมนู “ตั้งค่า”',
+    ai_model_not_found: 'ไม่พบโมเดลที่ตั้งไว้ — Admin ลบชื่อโมเดลในหน้า “ตั้งค่า” เพื่อใช้ค่าเริ่มต้น',
+    ai_rate_limit: 'ผู้ให้บริการ AI จำกัดจำนวนคำขอ/โควตา ลองใหม่ในอีกสักครู่',
+    ai_unavailable: 'ติดต่อผู้ให้บริการ AI ไม่ได้ในตอนนี้ ลองใหม่อีกครั้ง',
+    ai_bad_request: 'ผู้ให้บริการ AI ไม่รับไฟล์นี้ (อาจใหญ่ไป หรือมีรหัสผ่านล็อกอยู่)',
+    ai_bad_output: 'AI ตอบกลับมาในรูปแบบที่อ่านไม่ได้ ลองอ่านอีกครั้ง',
+    ai_blocked: 'AI ปฏิเสธการอ่านไฟล์นี้'
   };
   function errText(e) {
     var c = e && (e.code || e.name);
@@ -747,7 +836,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
 
   function clearSession() {
     token = ''; saveTok('');
-    me = null; users = []; contracts = []; renewals = []; lastSig = '';
+    me = null; users = []; contracts = []; renewals = []; lastSig = ''; feat = null; settings = null;
     closeModal();
   }
   function toLogin(msg) { clearSession(); lockError = msg || ''; loadMode(); }
@@ -790,10 +879,10 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     try {
       var data = await api('list');
       if (seq === writeSeq && writing === 0) {
-        var sig = JSON.stringify([data.contracts, data.renewals, data.users, data.me]);
+        var sig = JSON.stringify([data.contracts, data.renewals, data.users, data.me, data.pdf || null]);
         var changed = sig !== lastSig || auth !== 'ok' || !!syncError;
         contracts = data.contracts; renewals = data.renewals; users = data.users; me = data.me;
-        maxUsers = data.maxUsers || 5; lastSig = sig;
+        maxUsers = data.maxUsers || 5; lastSig = sig; feat = data.pdf || null;
         auth = 'ok'; syncError = '';
         if (changed && !modalOpen()) render();
       }
@@ -809,10 +898,18 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     var urgent = urgentCount();
     var items = [['dashboard', 'ภาพรวม'], ['contracts', 'สัญญาทั้งหมด']];
     if (isAdmin()) items.push(['users', 'ผู้ใช้']);
+    if (isAdmin() && feat) items.push(['settings', 'ตั้งค่า']);
     $('#nav').innerHTML = items.map(function (it) {
       var badge = it[0] === 'contracts' && urgent ? '<span class="badge" title="หมดอายุแล้วหรือครบใน 30 วัน">' + urgent + '</span>' : '';
       return '<a href="#' + it[0] + '"' + (ui.view === it[0] ? ' aria-current="page"' : '') + '>' + svgI(NAVICON[it[0]], 20, 1.9) + '<span class="nv-t">' + it[1] + '</span>' + badge + '</a>';
     }).join('');
+    // on a phone the menu scrolls sideways: keep the current page's tab in view
+    var nv = $('#nav'), cur = nv.querySelector('[aria-current="page"]');
+    if (cur && nv.scrollWidth > nv.clientWidth + 1) {
+      var r = cur.getBoundingClientRect(), n = nv.getBoundingClientRect();
+      if (r.right > n.right) nv.scrollLeft += r.right - n.right + 12;
+      else if (r.left < n.left) nv.scrollLeft -= n.left - r.left + 12;
+    }
   }
   function renderQuick() {
     var q = $('#quick');
@@ -886,15 +983,17 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     var ss = kid ? keep.selectionStart : null;
     var se = kid ? keep.selectionEnd : null;
 
-    if (ui.view === 'users' && auth === 'ok' && !isAdmin()) ui.view = 'dashboard';
+    if ((ui.view === 'users' || ui.view === 'settings') && auth === 'ok' && !isAdmin()) ui.view = 'dashboard';
+    if (ui.view === 'settings' && auth === 'ok' && !feat && me) ui.view = 'dashboard';   // old script: nothing to set up
     renderNav(); renderUser(); renderQuick(); renderBanner();
     document.body.classList.toggle('is-locked', auth !== 'ok');
-    var keepForm = (auth === 'login' && document.getElementById('loginForm')) || (auth === 'setup' && document.getElementById('setupForm'));
+    var keepForm = (auth === 'login' && document.getElementById('loginForm')) || (auth === 'setup' && document.getElementById('setupForm')) ||
+      (auth === 'ok' && ui.view === 'settings' && settingsKeep && document.getElementById('settingsForm'));
     if (!keepForm || syncError) {
       $('#main').innerHTML = auth === 'login' ? loginHTML()
         : auth === 'setup' ? setupHTML()
         : auth !== 'ok' ? checkingHTML()
-        : ui.view === 'contracts' ? viewContracts() : ui.view === 'users' ? viewUsers() : viewDashboard();
+        : ui.view === 'contracts' ? viewContracts() : ui.view === 'users' ? viewUsers() : ui.view === 'settings' ? viewSettings() : viewDashboard();
     }
     if (!kid && (auth === 'login' || auth === 'setup') && !modalOpen()) {
       var fi = document.getElementById(auth === 'login' ? (readUserHint() ? 'lg-pin' : 'lg-user') : 'su-key');
@@ -1175,6 +1274,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
   function closeModal() {
     $('#modal').innerHTML = '';
     pendingConfirm = null;
+    pdf = newPdf();
     if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
   }
   function modalOpen() { return !!$('#modal').firstChild; }
@@ -1190,7 +1290,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     var b = bucketOf(c);
     var hist = historyOf(c.id);
     var reviewed = c.reviewBy ? esc(c.reviewBy) + (c.reviewAt ? ' · ' + esc(fmtLong(c.reviewAt)) : '') : '<span class="muted">ยังไม่เคยบันทึก</span>';
-    var docRow = c.docPath ? esc(c.docPath) : '<span class="muted">ยังไม่มี</span>';
+    var docRow = c.docPath ? (isUrl(c.docPath) ? '<a class="link" href="' + esc(c.docPath) + '" target="_blank" rel="noopener">เปิดไฟล์ / ลิงก์เอกสาร</a>' : esc(c.docPath)) : '<span class="muted">ยังไม่มี</span>';
     openModal('<h2 id="mT">' + esc(c.title) + '</h2>' +
       '<p style="margin:-8px 0 14px"><span class="ub b-' + b + '">' + esc(BUCKET[b]) + '</span> <span class="muted" style="margin-left:6px">' + esc(whenText(c)) + '</span></p>' +
       '<dl class="dl">' +
@@ -1209,7 +1309,8 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
       (hist.length ? '<ul class="hist">' + hist.map(function (h) {
         return '<li><div class="h1">' + esc(fmtLong(h.oldStart)) + ' – ' + esc(fmtLong(h.oldEnd)) + ' → ' + esc(fmtLong(h.newStart)) + ' – ' + esc(fmtLong(h.newEnd)) + '</div>' +
           '<div class="h2">มูลค่า ' + (num(h.oldAmount) ? money(h.oldAmount) : '—') + ' → ' + (num(h.newAmount) ? money(h.newAmount) : '—') +
-          (h.refNo ? ' · ' + esc(h.refNo) : '') + ' · ต่อโดย ' + esc(h.by) + ' เมื่อ ' + esc(fmtStamp(h.at)) + (h.note ? ' · ' + esc(h.note) : '') + '</div></li>';
+          (h.refNo ? ' · ' + esc(h.refNo) : '') + ' · ต่อโดย ' + esc(h.by) + ' เมื่อ ' + esc(fmtStamp(h.at)) + (h.note ? ' · ' + esc(h.note) : '') +
+          (isUrl(h.docPath) ? ' · <a class="link" href="' + esc(h.docPath) + '" target="_blank" rel="noopener">เอกสารของช่วงนี้</a>' : '') + '</div></li>';
       }).join('') + '</ul>' : '<p class="hint" style="margin-top:6px">ยังไม่มีประวัติ — จะเก็บไว้ที่นี่ทุกครั้งที่กด “ต่อสัญญา”</p>') +
       '<div class="row-actions"><button type="button" class="btn" data-action="close-modal">ปิด</button>' +
         '<button type="button" class="btn" data-action="edit" data-id="' + esc(c.id) + '">' + ICON.edit + 'แก้ไข</button>' +
@@ -1225,8 +1326,10 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
   function openEditModal(c) {
     var x = c || { title: '', groupName: '', supplier: '', serial: '', refNo: '', start: ymd(today()), end: '', qty: '1', unit: '', amount: '', status: 'Active', noExpiry: '', auto: '', docPath: '', note: '' };
     if (!c) x.end = addYear(x.start);
+    pdf = newPdf(c ? 'edit' : 'add');
     openModal('<h2 id="mT">' + (c ? 'แก้ไขสัญญา' : 'เพิ่มสัญญา') + '</h2>' +
       '<form id="contractForm" data-id="' + esc(c ? c.id : '') + '" novalidate>' +
+        pdfBoxHTML() +
         '<div class="field"><label for="f-title">ชื่อรายการ <span class="req">*</span></label><input type="text" id="f-title" data-first value="' + esc(x.title) + '" maxlength="200" placeholder="เช่น ESET PROTECT – PD (85 License)"></div>' +
         '<div class="two">' +
           '<div class="field"><label for="f-group">สัญญา / กลุ่ม</label><input type="text" id="f-group" list="dl-group" value="' + esc(x.groupName) + '" maxlength="80"><datalist id="dl-group">' + optionsFor('groupName').map(function (v) { return '<option value="' + esc(v) + '">'; }).join('') + '</datalist></div>' +
@@ -1276,12 +1379,14 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
       docPath: $('#f-doc').value.trim(), note: $('#f-note').value.trim()
     };
     if (id) row.id = id;
-    var btn = $('#saveBtn'); btn.disabled = true;
+    var btn = $('#saveBtn'), btnText = btn.textContent; btn.disabled = true;
+    var withFile = pdf.status !== 'none';
     var ok = await safe(async function () {
+      if (withFile) { btn.textContent = 'กำลังอัปโหลดไฟล์…'; row.docPath = await pdfStore(title); }
       var res = await api('upsert', { row: row });
       upsertLocal(contracts, res.row);
     }, id ? 'บันทึกแล้ว' : 'เพิ่มสัญญาแล้ว');
-    if (ok) closeModal(); else btn.disabled = false;
+    if (ok) closeModal(); else { btn.disabled = false; btn.textContent = btnText; }
   }
 
   function openRenewModal(c) {
@@ -1292,6 +1397,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     var reviewed = c.reviewBy ? esc(c.reviewBy) + (c.reviewAt ? ' · ' + esc(fmtShort(c.reviewAt)) : '') : '<span class="muted">ยังไม่เคยบันทึก</span>';
     var b = bucketOf(c);
     var lastPeriod = (c.start ? fmtLong(c.start) : '—') + ' – ' + (c.end ? fmtLong(c.end) : '—');
+    pdf = newPdf('renew');
     openModal('<h2 id="mT">' + (c.status === 'Ended' ? 'เปิดสัญญาใหม่ / ต่อสัญญา' : 'ต่อสัญญา') + '</h2>' +
       '<p class="muted" style="margin:-8px 0 14px">ระบบเติมช่วงเวลาและราคาจากปีก่อนให้แล้ว แก้เฉพาะที่เปลี่ยน</p>' +
       '<div class="rn"><section class="rn-cur" aria-label="สัญญาปัจจุบัน"><h3>สัญญาปัจจุบัน</h3>' +
@@ -1303,6 +1409,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
           dlRow('มูลค่า', num(c.amount) ? '<b>' + money(c.amount) + '</b>' : '—') + dlRow('ตรวจสอบล่าสุด', reviewed) +
         '</dl></section>' +
       '<form id="renewForm" class="rn-form" data-id="' + esc(c.id) + '" data-old="' + esc(num(c.amount)) + '" novalidate>' +
+        pdfBoxHTML() +
         '<div class="two">' +
           '<div class="field"><label for="rn-start">วันเริ่มสัญญาใหม่</label><input type="date" id="rn-start" data-first value="' + esc(startS) + '"></div>' +
           '<div class="field"><label for="rn-end">วันสิ้นสุดสัญญาใหม่</label><input type="date" id="rn-end" value="' + esc(endS) + '"></div>' +
@@ -1328,6 +1435,14 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     updateDelta();
   }
 
+  function recalcAmount(pre) {
+    var amt = document.getElementById(pre + 'amount');
+    if (amt && amt.getAttribute('data-manual') !== '1') {
+      var q = num($('#' + pre + 'qty').value), u = num($('#' + pre + 'unit').value);
+      if (q && u) amt.value = String(Math.round(q * u * 100) / 100);
+    }
+  }
+
   function updateDelta() {
     var form = $('#renewForm'); if (!form) return;
     var el = $('#rn-delta'); if (!el) return;
@@ -1350,14 +1465,354 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
       id: id, start: start, end: end, qty: $('#rn-qty').value.trim(), unit: $('#rn-unit').value.trim(), amount: $('#rn-amount').value.trim(),
       refNo: $('#rn-ref').value.trim(), serial: $('#rn-serial').value.trim(), docPath: $('#rn-doc').value.trim(), note: $('#rn-note').value.trim()
     };
-    var btn = $('#saveBtn'); btn.disabled = true;
+    var btn = $('#saveBtn'), btnText = btn.textContent; btn.disabled = true;
     var title = (findContract(id) || {}).title || '';
+    var withFile = pdf.status !== 'none';
     var ok = await safe(async function () {
+      if (withFile) { btn.textContent = 'กำลังอัปโหลดไฟล์…'; payload.docPath = await pdfStore(title); }
       var res = await api('renew', payload);
       upsertLocal(contracts, res.row);
       renewals.push(res.renewal);
     }, 'ต่อสัญญา "' + title + '" แล้ว');
-    if (ok) closeModal(); else btn.disabled = false;
+    if (ok) closeModal(); else { btn.disabled = false; btn.textContent = btnText; }
+  }
+
+  /* ---------- PDF attachment (optional AI reading) ---------- */
+  var PDF_ORDER = ['title', 'supplier', 'serial', 'refNo', 'start', 'end', 'qty', 'unit', 'amount', 'auto'];
+  var PDF_LABEL = { title: 'ชื่อรายการ', supplier: 'ผู้ให้บริการ', serial: 'เลขที่สัญญา / Serial', refNo: 'ใบเสนอราคา / PO', start: 'วันเริ่ม', end: 'วันสิ้นสุด', qty: 'จำนวน', unit: 'ราคาต่อหน่วย', amount: 'มูลค่ารวม', auto: 'ต่ออัตโนมัติ' };
+  var PDF_IDS = {
+    renew: { start: 'rn-start', end: 'rn-end', qty: 'rn-qty', unit: 'rn-unit', amount: 'rn-amount', refNo: 'rn-ref', serial: 'rn-serial', note: 'rn-note', doc: 'rn-doc' },
+    form: { title: 'f-title', supplier: 'f-sup', serial: 'f-serial', refNo: 'f-ref', start: 'f-start', end: 'f-end', qty: 'f-qty', unit: 'f-unit', amount: 'f-amount', auto: 'f-auto', note: 'f-note', doc: 'f-doc' }
+  };
+  // status: none | loading | ready | reading | done | failed
+  function newPdf(mode) { return { mode: mode || '', ai: true, name: '', size: 0, b64: '', status: 'none', err: '', result: null, rows: [], noteState: '', stored: '', p: null }; }
+  var pdf = newPdf();
+  function pdfIds() { return pdf.mode === 'renew' ? PDF_IDS.renew : PDF_IDS.form; }
+  function pdfMax() { return ((feat && feat.maxMb) || 10) * 1048576; }
+  function sizeText(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+
+  function pdfBoxHTML() { return feat ? '<div class="pdfbox" id="pdfbox">' + pdfInner() + '</div>' : ''; }
+
+  function pdfInner() {
+    var h = '<div class="pdfbox-h"><span class="pdfbox-t">' + ICON.clip + 'แนบไฟล์ PDF <span class="opt">(ไม่บังคับ)</span></span></div>';
+    if (!feat.folder) {
+      return h + '<p class="hint">ยังแนบไฟล์ไม่ได้ เพราะยังไม่ได้ตั้งค่าโฟลเดอร์เก็บไฟล์ ' +
+        (isAdmin() ? '— <button type="button" class="link" data-action="go-settings">เปิดหน้าตั้งค่า</button>' : '— ให้ Admin ตั้งค่าที่เมนู “ตั้งค่า”') +
+        ' · ระหว่างนี้วางพาธหรือลิงก์ในช่อง “ที่อยู่เอกสาร” ได้ตามเดิม</p>';
+    }
+    var input = '<input type="file" id="pdfFile" accept="application/pdf,.pdf" hidden>';
+    if (pdf.status === 'none') {
+      return h + '<div class="pdfdrop" id="pdfdrop"><button type="button" class="btn" data-action="pdf-pick">' + ICON.clip + 'เลือกไฟล์ PDF</button>' +
+        '<span class="hint">หรือลากไฟล์มาวางตรงนี้ · ไม่เกิน ' + Math.round(pdfMax() / 1048576) + ' MB</span></div>' +
+        (feat.ai
+          ? '<label class="check pdfai"><input type="checkbox" id="pdfAi"' + (pdf.ai ? ' checked' : '') + '><span>ให้ AI อ่านไฟล์และเติมข้อมูลในฟอร์มให้ <span class="muted">(พิมพ์เองก็ได้ และต้องตรวจก่อนกดบันทึก)</span></span></label>'
+          : '<p class="hint">ยังไม่ได้ตั้งค่า AI — ไฟล์จะถูกแนบเก็บไว้เฉยๆ ' + (isAdmin() ? '· <button type="button" class="link" data-action="go-settings">ตั้งค่า AI</button>' : '') + '</p>') + input;
+    }
+    h += '<div class="pdfdrop has" id="pdfdrop"><div class="pdfchip">' + ICON.clip + '<span class="nm">' + esc(pdf.name) + '</span><span class="sz">' + sizeText(pdf.size) + '</span></div>' +
+      '<span class="pdfbtns"><button type="button" class="btn sm" data-action="pdf-pick">เปลี่ยนไฟล์</button><button type="button" class="btn sm" data-action="pdf-clear">เอาออก</button></span></div>' + input;
+    if (pdf.status === 'loading') return h + '<p class="pdfst">กำลังเตรียมไฟล์…</p>';
+    if (pdf.status === 'ready') {
+      return h + '<p class="pdfst">' + (feat.ai ? '<button type="button" class="btn sm" data-action="pdf-read">ให้ AI อ่านไฟล์นี้</button> ' : '') +
+        'ไฟล์จะถูกเก็บลงโฟลเดอร์ Drive เมื่อกดบันทึก</p>';
+    }
+    if (pdf.status === 'reading') return h + '<p class="pdfst busy" role="status"><span class="spin" aria-hidden="true"></span>AI กำลังอ่านไฟล์… ใช้เวลาประมาณ 10–40 วินาที พิมพ์ข้อมูลเองไปพลางๆ ได้</p>';
+    if (pdf.status === 'failed') {
+      return h + '<div class="pdfst bad" role="alert">AI อ่านไฟล์ไม่สำเร็จ: ' + esc(pdf.err) + '<br><span class="muted">ไฟล์ยังแนบอยู่ — กรอกข้อมูลเองแล้วกดบันทึกได้</span> <button type="button" class="btn sm" data-action="pdf-read">ลองอ่านอีกครั้ง</button></div>';
+    }
+    // done: what the AI found
+    var r = pdf.result || {};
+    var list = pdf.rows.map(function (x) {
+      var state = x.state === 'filled' ? '<span class="st ok">เติมในฟอร์มแล้ว</span>'
+        : x.state === 'same' ? '<span class="st">ตรงกับที่กรอก</span>'
+        : '<span class="st warn">ในฟอร์มคือ ' + esc(x.cur ? pdfShow(x.k, x.cur) : '(ว่าง)') + '</span><button type="button" class="btn sm" data-action="pdf-use" data-k="' + x.k + '">ใช้ค่านี้</button>';
+      var vat = x.k === 'amount' && r.amountBasis ? ' <span class="muted">(' + (r.amountBasis === 'incl' ? 'รวม VAT' : 'ไม่รวม VAT') + ')</span>' : '';
+      return '<li><span class="k">' + PDF_LABEL[x.k] + '</span><span class="v">' + esc(pdfShow(x.k, x.v)) + vat + '</span>' + state + '</li>';
+    }).join('');
+    var sum = r.summary ? '<blockquote class="pdfsum">' + esc(r.summary) + '</blockquote>' +
+      (pdf.noteState === 'filled' ? '<p class="hint">ใส่สรุปนี้ในช่องหมายเหตุให้แล้ว</p>'
+        : pdf.noteState === 'append' ? '<p class="hint">ช่องหมายเหตุมีข้อความอยู่แล้ว <button type="button" class="btn sm" data-action="pdf-note">ต่อท้ายหมายเหตุ</button></p>' : '') : '';
+    return h + '<div class="pdfres" role="status"><div class="pdfres-h">' + ICON.check + 'AI อ่านไฟล์แล้ว — ตรวจความถูกต้องก่อนกดบันทึก</div>' + sum +
+      (list ? '<ul class="pdfres-list">' + list + '</ul>' : '<p class="hint">ไม่พบข้อมูลที่เติมลงฟอร์มได้ในไฟล์นี้ — กรอกเองได้</p>') + '</div>';
+  }
+
+  function pdfShow(k, v) {
+    if (k === 'start' || k === 'end') return fmtLong(v);
+    if (k === 'qty') return fmtNum(num(v));
+    if (k === 'unit') return '฿' + fmtNum(num(v));
+    if (k === 'amount') return money(v);
+    if (k === 'auto') return v === 'yes' ? 'ต่ออัตโนมัติ' : 'ไม่ต่ออัตโนมัติ';
+    return String(v);
+  }
+
+  function renderPdf() {
+    var box = $('#pdfbox');
+    if (!box) return;
+    box.innerHTML = pdfInner();
+    // the typed-link box is replaced by the attached file's link
+    var d = document.getElementById(pdfIds().doc);
+    if (!d) return;
+    var on = pdf.status !== 'none';
+    if (on && !d.disabled) { d.setAttribute('data-prev', d.value); d.setAttribute('data-ph', d.placeholder); d.value = ''; d.disabled = true; d.placeholder = 'ลิงก์ไฟล์ที่แนบจะถูกใส่ให้เองเมื่อกดบันทึก'; }
+    else if (!on && d.disabled) { d.disabled = false; d.value = d.getAttribute('data-prev') || ''; d.placeholder = d.getAttribute('data-ph') || ''; }
+  }
+
+  function pdfPick(file) {
+    if (!file || !feat || !feat.folder) return;
+    if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') { toast('เลือกได้เฉพาะไฟล์ PDF'); return; }
+    if (file.size > pdfMax()) { toast('ไฟล์ใหญ่เกิน ' + Math.round(pdfMax() / 1048576) + ' MB — ลดขนาดไฟล์ก่อน'); return; }
+    if (file.size < 16) { toast('ไฟล์นี้ว่างเปล่า'); return; }
+    var keep = { mode: pdf.mode, ai: pdf.ai };
+    var my = pdf = newPdf(keep.mode);
+    my.ai = keep.ai;
+    my.name = file.name; my.size = file.size; my.status = 'loading';
+    my.p = new Promise(function (resolve, reject) {
+      var fr = new FileReader();
+      fr.onload = function () { var t = String(fr.result || ''), i = t.indexOf(','); resolve(i >= 0 ? t.slice(i + 1) : ''); };
+      fr.onerror = function () { reject(fr.error || new Error('read')); };
+      fr.readAsDataURL(file);
+    });
+    renderPdf();
+    my.p.then(function (b64) {
+      if (my !== pdf) return;
+      var head = '';
+      try { head = atob(b64.slice(0, 8)); } catch (e) { head = ''; }
+      if (head.indexOf('%PDF-') !== 0) { pdf = newPdf(keep.mode); pdf.ai = keep.ai; renderPdf(); toast('ไฟล์นี้ไม่ใช่ PDF ที่ถูกต้อง'); return; }
+      my.b64 = b64; my.status = 'ready';
+      renderPdf();
+      if (feat.ai && my.ai) pdfRead();
+    }, function () {
+      if (my !== pdf) return;
+      pdf = newPdf(keep.mode); pdf.ai = keep.ai; renderPdf(); toast('อ่านไฟล์ไม่ได้ ลองเลือกใหม่');
+    });
+  }
+
+  function pdfClear() {
+    var keep = { mode: pdf.mode, ai: pdf.ai };
+    pdf = newPdf(keep.mode); pdf.ai = keep.ai;
+    renderPdf();
+  }
+
+  function pdfHint() {
+    var f = $('#renewForm'), c = f ? findContract(f.getAttribute('data-id')) : null;
+    return c ? { title: c.title, oldStart: c.start, oldEnd: c.end } : {};
+  }
+
+  async function pdfRead() {
+    var my = pdf;
+    if (!my.b64 || my.status === 'reading' || !feat || !feat.ai) return;
+    my.status = 'reading'; my.err = ''; renderPdf();
+    try {
+      var res = await api('readPdf', { data: my.b64, mode: my.mode === 'renew' ? 'renew' : 'add', hint: pdfHint() }, 120000);
+      if (my !== pdf) return;
+      my.result = res.data || {}; my.status = 'done';
+      pdfApply(my.result);
+    } catch (e) {
+      if (my !== pdf) return;
+      if (e && e.code === 'bad_token') { toLogin(ERR.bad_token); return; }
+      my.status = 'failed'; my.err = errText(e);
+    }
+    renderPdf();
+  }
+
+  function pdfCur(el, k) { return k === 'auto' ? (el.checked ? 'yes' : 'no') : String(el.value == null ? '' : el.value).trim(); }
+  function pdfSame(k, a, b) {
+    if (k === 'qty' || k === 'unit' || k === 'amount') return a !== '' && Math.abs(num(a) - num(b)) < 0.005;
+    return String(a).trim().toLowerCase() === String(b).trim().toLowerCase();
+  }
+  // Fields the person typed are never overwritten. Editing an existing contract only fills empty fields.
+  function pdfCanFill(el) {
+    if (el.getAttribute('data-touched') === '1') return false;
+    if (pdf.mode === 'edit') return el.type === 'checkbox' ? false : !String(el.value || '').trim();
+    return true;
+  }
+  function pdfSet(k, v, res) {
+    var ids = pdfIds(), el = document.getElementById(ids[k]);
+    if (!el) return;
+    if (k === 'auto') { el.checked = v === 'yes'; el.classList.add('ai-filled'); return; }
+    if (k === 'end') {
+      var ne = document.getElementById('f-noexp');
+      if (ne && ne.checked) { ne.checked = false; el.disabled = false; }
+      el.setAttribute('data-manual', '1');
+    }
+    if (k === 'amount') el.setAttribute('data-manual', '1');
+    el.value = v; el.classList.add('ai-filled');
+    if (k === 'start') {
+      var endEl = document.getElementById(ids.end);
+      if (endEl && !endEl.disabled && endEl.getAttribute('data-manual') !== '1' && !(res && res.end)) endEl.value = addYear(v);
+    }
+    if (k === 'qty' || k === 'unit') recalcAmount(pdf.mode === 'renew' ? 'rn-' : 'f-');
+    if (pdf.mode === 'renew') updateDelta();
+  }
+  function pdfApply(res) {
+    var ids = pdfIds(), rows = [];
+    PDF_ORDER.forEach(function (k) {
+      var v = res[k];
+      if (!v) return;
+      if (pdf.mode === 'renew' && (k === 'title' || k === 'auto')) return;
+      var el = document.getElementById(ids[k]);
+      if (!el) return;
+      var cur = pdfCur(el, k);
+      if (pdfSame(k, cur, v)) { rows.push({ k: k, v: v, state: 'same' }); return; }
+      if (pdfCanFill(el)) { pdfSet(k, v, res); rows.push({ k: k, v: v, state: 'filled' }); }
+      else rows.push({ k: k, v: v, state: 'differs', cur: cur });
+    });
+    pdf.rows = rows;
+    var nEl = document.getElementById(ids.note);
+    pdf.noteState = '';
+    if (res.summary && nEl) {
+      if (!String(nEl.value).trim() && nEl.getAttribute('data-touched') !== '1') { nEl.value = res.summary.slice(0, nEl.maxLength > 0 ? nEl.maxLength : 800); nEl.classList.add('ai-filled'); pdf.noteState = 'filled'; }
+      else pdf.noteState = 'append';
+    }
+  }
+  function pdfUse(k) {
+    var row = null;
+    pdf.rows.forEach(function (x) { if (x.k === k) row = x; });
+    if (!row) return;
+    pdfSet(k, row.v, pdf.result);
+    row.state = 'filled';
+    renderPdf();
+  }
+  function pdfNote() {
+    var nEl = document.getElementById(pdfIds().note), s = pdf.result && pdf.result.summary;
+    if (!nEl || !s) return;
+    var cur = String(nEl.value || '').trim();
+    nEl.value = (cur ? cur + '\n' : '') + s;
+    if (nEl.maxLength > 0) nEl.value = nEl.value.slice(0, nEl.maxLength);
+    nEl.classList.add('ai-filled'); pdf.noteState = 'filled';
+    renderPdf();
+  }
+
+  // Saves the attached file in Drive (only when the form is saved) and returns its link.
+  async function pdfStore(title) {
+    var my = pdf;
+    if (my.stored) return my.stored;
+    if (!my.b64 && my.p) { try { await my.p; } catch (e) { /* handled below */ } }
+    if (!my.b64) throw new Error('no_file');
+    var res = await api('storePdf', { name: my.name, data: my.b64, title: title || '' }, 120000);
+    my.stored = res.file.url;
+    return my.stored;
+  }
+
+  /* ---------- settings (admin) ---------- */
+  async function loadSettings() {
+    if (settingsLoading || !isAdmin()) return;
+    settingsLoading = true; settingsMsg = '';
+    try { settings = await api('settingsGet'); settingsKeep = false; }
+    catch (e) {
+      if (e && e.code === 'bad_token') { settingsLoading = false; toLogin(ERR.bad_token); return; }
+      settingsMsg = errText(e);
+    }
+    settingsLoading = false;
+    if (ui.view === 'settings') render();
+  }
+
+  var PROV_NAME = { claude: 'Claude (Anthropic)', gemini: 'Gemini (Google)' };
+  function viewSettings() {
+    if (!settings && !settingsLoading && !settingsMsg) loadSettings();
+    var head = '<div class="page-head"><div><h1>ตั้งค่า</h1><p class="sub">ไฟล์แนบ PDF และ AI ที่ช่วยอ่านสรุป — เฉพาะ Admin</p></div></div>';
+    if (!settings) return head + (settingsMsg ? '<div class="card note-card err-card">โหลดการตั้งค่าไม่ได้: ' + esc(settingsMsg) + ' <button type="button" class="btn sm" data-action="retry-settings">ลองใหม่</button></div>' : '<p class="loading">กำลังโหลดการตั้งค่า…</p>');
+    var s = settings;
+    var prov = s.provider === 'gemini' ? 'gemini' : 'claude';
+    var fState = s.folderOk ? '<div class="st-state ok">' + ICON.check + 'เชื่อมต่อแล้ว: โฟลเดอร์ “' + esc(s.folderName) + '”</div>'
+      : s.needAuth ? '<div class="st-state warn">' + ICON.alert + 'สคริปต์ยังไม่ได้รับสิทธิ์ใช้ Drive — ทำตามขั้นตอนด้านล่าง (เจ้าของสคริปต์กดอนุญาตครั้งเดียว)</div>'
+      : s.folderId ? '<div class="st-state bad">' + ICON.xc + 'เข้าโฟลเดอร์ที่ตั้งไว้ไม่ได้ — ตรวจลิงก์และสิทธิ์</div>'
+      : '<div class="st-state">' + ICON.info + 'ยังไม่ได้ตั้งค่า — ยังแนบไฟล์ไม่ได้</div>';
+    var kState = s.keySet ? '<div class="st-state ok">' + ICON.check + 'ตั้งคีย์ไว้แล้ว (' + esc(s.keyHint) + ') — ใช้อ่านได้ ' + esc(String(s.dailyMax)) + ' ไฟล์/วัน วันนี้ใช้ไป ' + esc(String(s.usedToday)) + '</div>'
+      : '<div class="st-state">' + ICON.info + 'ยังไม่ได้ใส่คีย์ — ยังแนบไฟล์ได้ แต่ AI จะไม่อ่านให้</div>';
+    return head +
+      '<form id="settingsForm" novalidate class="st-wrap">' +
+      '<section class="card st-card"><h2>1. โฟลเดอร์เก็บไฟล์ PDF (Google Drive)</h2>' + fState +
+        '<div class="field"><label for="st-folder">ลิงก์โฟลเดอร์ ' + (s.folderId ? '<span class="opt">(เว้นว่างถ้าไม่เปลี่ยน)</span>' : '') + '</label>' +
+        '<input type="text" id="st-folder" autocomplete="off" spellcheck="false" placeholder="https://drive.google.com/drive/folders/…"></div>' +
+        '<ul class="st-help"><li>เปิดโฟลเดอร์ใน Google Drive แล้วคัดลอกลิงก์จากแถบที่อยู่ของเบราว์เซอร์ มาวางที่นี่</li>' +
+        '<li>บัญชี Google ที่เป็น <b>เจ้าของสคริปต์</b> (บัญชีที่ deploy Web App) ต้องมีสิทธิ์ “แก้ไข” โฟลเดอร์นี้</li>' +
+        '<li>ผู้ที่จะเปิดไฟล์ต้องมีสิทธิ์เข้าโฟลเดอร์นี้ด้วย — แชร์โฟลเดอร์ให้ทีมที่ใช้ระบบ</li></ul>' +
+        (s.folderId ? '<div><button type="button" class="btn sm" data-action="st-clear-folder">เลิกใช้โฟลเดอร์นี้</button></div>' : '') +
+      '</section>' +
+      '<section class="card st-card"><h2>2. AI อ่านและสรุป PDF <span class="opt">(ไม่บังคับ)</span></h2>' + kState +
+        '<div class="field" role="radiogroup" aria-labelledby="st-pl"><span class="lbl" id="st-pl">ผู้ให้บริการ</span><div class="seg two">' +
+          '<label class="seg-o"><input type="radio" name="st-provider" value="claude"' + (prov === 'claude' ? ' checked' : '') + '><span>Claude (Anthropic)</span></label>' +
+          '<label class="seg-o"><input type="radio" name="st-provider" value="gemini"' + (prov === 'gemini' ? ' checked' : '') + '><span>Gemini (Google)</span></label></div></div>' +
+        '<div class="field"><label for="st-key">คีย์ API ' + (s.keySet ? '<span class="opt">(เว้นว่างถ้าไม่เปลี่ยน)</span>' : '') + '</label>' +
+          '<input type="password" id="st-key" autocomplete="new-password" spellcheck="false" maxlength="200" placeholder="' + (s.keySet ? 'ตั้งไว้แล้ว ' + esc(s.keyHint) : 'วางคีย์ที่นี่') + '">' +
+          '<div class="hint">คีย์เก็บในสคริปต์ฝั่ง Google เท่านั้น ไม่แสดงกลับมา และไม่อยู่ใน Sheet หรือหน้าเว็บ</div></div>' +
+        '<div class="field"><label for="st-model">ชื่อโมเดล <span class="opt">(ไม่ต้องกรอก ใช้ค่าเริ่มต้นได้)</span></label>' +
+          '<input type="text" id="st-model" autocomplete="off" spellcheck="false" maxlength="80" value="' + esc(s.model) + '" placeholder="ค่าเริ่มต้น: ' + esc(s.defaultModel) + '"></div>' +
+        '<div class="st-prov" data-prov="claude"' + (prov === 'claude' ? '' : ' hidden') + '><ul class="st-help"><li>สมัครและสร้างคีย์ที่ <b>console.anthropic.com</b> (เมนู API keys) ต้องเติมเครดิตก่อนใช้</li>' +
+          '<li>ตามเงื่อนไขของผู้ให้บริการ ข้อมูลที่ส่งผ่าน API แบบเสียเงินไม่ถูกนำไปเทรนโมเดล (ควรอ่านเงื่อนไขล่าสุดอีกครั้ง)</li></ul></div>' +
+        '<div class="st-prov" data-prov="gemini"' + (prov === 'gemini' ? '' : ' hidden') + '><ul class="st-help"><li>สร้างคีย์ที่ <b>aistudio.google.com/apikey</b></li>' +
+          '<li><b>ข้อควรระวัง:</b> Gemini API แบบฟรี Google อาจนำข้อมูลที่ส่งไปปรับปรุงบริการ — สำหรับเอกสารสัญญาควรผูกบัญชีเรียกเก็บเงิน (แบบเสียเงิน)</li></ul></div>' +
+        '<ul class="st-help"><li>เมื่อกด “ให้ AI อ่าน” เนื้อหาของ PDF จะถูกส่งไปยังผู้ให้บริการที่เลือก — ถ้าไม่อยากส่ง ให้ติ๊กออกในหน้าแนบไฟล์ แล้วไฟล์จะถูกเก็บเฉยๆ</li>' +
+          '<li>ค่าใช้จ่ายขึ้นกับจำนวนหน้า โดยประมาณไม่กี่บาทต่อไฟล์ ดูราคาจริงที่หน้าของผู้ให้บริการ · ระบบจำกัด ' + esc(String(s.dailyMax)) + ' ไฟล์ต่อวันเพื่อกันค่าใช้จ่ายบาน</li></ul>' +
+        (s.keySet ? '<div><button type="button" class="btn sm" data-action="st-clear-key">ลบคีย์ที่ตั้งไว้</button></div>' : '') +
+      '</section>' +
+      '<div class="err" id="st-err" role="alert"></div><div id="st-result" aria-live="polite"></div>' +
+      '<div class="actions st-actions"><button type="button" class="btn" data-action="st-test" id="st-testBtn">ทดสอบการเชื่อมต่อ</button><button type="submit" class="btn primary" id="st-saveBtn">บันทึกการตั้งค่า</button></div>' +
+      '</form>' +
+      '<details class="card st-card st-first"' + (s.needAuth ? ' open' : '') + '><summary>ขั้นตอนครั้งแรก: อนุญาตให้สคริปต์ใช้ Drive (เจ้าของสคริปต์ทำครั้งเดียว)</summary>' +
+        '<ol class="st-help"><li>เปิด Google Apps Script ของโปรเจกต์นี้ แล้ววางโค้ดเวอร์ชันใหม่ (ที่มีส่วน “PDF attachments”)</li>' +
+        '<li>เลือกฟังก์ชัน <b>authorizeAccess</b> ในช่องเลือกฟังก์ชันด้านบน แล้วกด “เรียกใช้ (Run)”</li>' +
+        '<li>Google จะถามสิทธิ์ (Drive และการเชื่อมต่อภายนอก) → กด “ตรวจสอบสิทธิ์” → เลือกบัญชี → “ขั้นสูง” → “ไปที่ … (ไม่ปลอดภัย)” → “อนุญาต”</li>' +
+        '<li>เลือก “ทำให้ใช้งานได้ → จัดการการทำให้ใช้งานได้ → แก้ไข → เวอร์ชันใหม่ → ทำให้ใช้งานได้” (ลิงก์ /exec เดิมไม่เปลี่ยน)</li></ol></details>';
+  }
+
+  function settingsProviderHints() {
+    var r = document.querySelector('input[name="st-provider"]:checked');
+    var v = r ? r.value : 'claude';
+    var els = document.querySelectorAll('.st-prov');
+    for (var i = 0; i < els.length; i++) els[i].hidden = els[i].getAttribute('data-prov') !== v;
+    var m = $('#st-model');
+    if (m && settings) m.placeholder = 'ค่าเริ่มต้น: ' + (v === 'gemini' ? 'gemini-2.5-flash' : 'claude-sonnet-5-5');
+  }
+
+  async function saveSettings(only) {
+    var err = $('#st-err'), btn = $('#st-saveBtn');
+    if (err) err.textContent = '';
+    var payload = {};
+    if (only) payload = only;
+    else {
+      var f = $('#st-folder').value.trim(), k = $('#st-key').value.trim(), m = $('#st-model').value.trim();
+      var r = document.querySelector('input[name="st-provider"]:checked');
+      if (f) payload.folder = f;
+      if (k) payload.aiKey = k;
+      if (THAI.test(k)) { err.textContent = 'คีย์มีตัวอักษรไทย — เช็กว่าวางคีย์ถูกต้อง'; return; }
+      payload.model = m;
+      if (r) payload.provider = r.value;
+    }
+    if (btn) btn.disabled = true;
+    try {
+      settings = await api('settingsSave', payload, 45000);
+      settingsKeep = false;
+      var res = $('#st-result'); if (res) res.innerHTML = '';
+      toast('บันทึกการตั้งค่าแล้ว');
+      lastSig = ''; refresh();
+      render();
+    } catch (e) {
+      if (e && e.code === 'bad_token') { toLogin(ERR.bad_token); return; }
+      if (err) err.textContent = errText(e);
+      if (btn) btn.disabled = false;
+    }
+  }
+
+  async function testSettings() {
+    var box = $('#st-result'), btn = $('#st-testBtn');
+    if (!box) return;
+    if (settingsKeep) { var er = $('#st-err'); if (er) er.textContent = 'มีค่าที่ยังไม่ได้บันทึก — กด “บันทึกการตั้งค่า” ก่อนแล้วค่อยทดสอบ'; return; }
+    if (btn) { btn.disabled = true; btn.textContent = 'กำลังทดสอบ…'; }
+    box.innerHTML = '<p class="pdfst busy"><span class="spin" aria-hidden="true"></span>กำลังทดสอบโฟลเดอร์และ AI…</p>';
+    try {
+      var t = await api('settingsTest', {}, 90000);
+      var line = function (ok, label, okText, bad) { return '<li class="' + (ok ? 'ok' : 'bad') + '">' + (ok ? ICON.check : ICON.xc) + '<span><b>' + label + '</b> ' + (ok ? okText : bad) + '</span></li>'; };
+      var fBad = ERR[t.folder.error] || t.folder.error || '';
+      var aBad = (ERR[t.ai.error] || t.ai.error || '') + (t.ai.detail ? ' <span class="mono">' + esc(t.ai.detail) + '</span>' : '');
+      box.innerHTML = '<ul class="st-test">' +
+        line(t.folder.ok, 'โฟลเดอร์ Drive', 'เขียนไฟล์ลง “' + esc(t.folder.name || '') + '” ได้', esc(fBad)) +
+        line(t.ai.ok, 'AI', 'ตอบกลับได้ (' + esc(PROV_NAME[t.ai.provider] || '') + ' · ' + esc(t.ai.model || '') + ')', aBad) + '</ul>';
+    } catch (e) {
+      if (e && e.code === 'bad_token') { toLogin(ERR.bad_token); return; }
+      box.innerHTML = '<p class="err">ทดสอบไม่สำเร็จ: ' + esc(errText(e)) + '</p>';
+    }
+    if (btn) { btn.disabled = false; btn.textContent = 'ทดสอบการเชื่อมต่อ'; }
   }
 
   /* ---------- sign-in ---------- */
@@ -1453,10 +1908,38 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     else if (a === 'account') openAccountModal();
     else if (a === 'add-user') { if (isAdmin()) openUserModal(null); }
     else if (a === 'edit-user') { var eu = userById(id); if (eu && isAdmin()) openUserModal(eu); }
+    else if (a === 'pdf-pick') { var pf = $('#pdfFile'); if (pf) pf.click(); }
+    else if (a === 'pdf-clear') pdfClear();
+    else if (a === 'pdf-read') pdfRead();
+    else if (a === 'pdf-use') pdfUse(el.getAttribute('data-k'));
+    else if (a === 'pdf-note') pdfNote();
+    else if (a === 'go-settings') window.open(location.href.split('#')[0] + '#settings', '_blank', 'noopener');
+    else if (a === 'st-test') testSettings();
+    else if (a === 'retry-settings') { settings = null; settingsMsg = ''; render(); }
+    else if (a === 'st-clear-folder') saveSettings({ folder: '' });
+    else if (a === 'st-clear-key') saveSettings({ clearKey: true });
+  });
+
+  /* drag a PDF onto the attachment box (anywhere in the dialog); stops the browser from opening the file and losing the form */
+  document.addEventListener('dragover', function (e) {
+    var z = $('#pdfdrop');
+    if (!z) return;
+    e.preventDefault();
+    z.classList.toggle('over', !!(e.target.closest && e.target.closest('#modal')));
+  });
+  document.addEventListener('dragleave', function (e) { var z = $('#pdfdrop'); if (z && !e.relatedTarget) z.classList.remove('over'); });
+  document.addEventListener('drop', function (e) {
+    var z = $('#pdfdrop');
+    if (!z) return;
+    e.preventDefault(); z.classList.remove('over');
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) pdfPick(f);
   });
 
   document.addEventListener('input', function (e) {
     var id = e.target.id;
+    if (e.target.closest && e.target.closest('#modal') && id) { e.target.setAttribute('data-touched', '1'); e.target.classList.remove('ai-filled'); }
+    if (id && id.indexOf('st-') === 0) settingsKeep = true;
     if (id === 'q') { ui.q = e.target.value; ui.page = 0; render(); return; }
     if (id === 'su-key' || id === 'su-user') {
       var bad = THAI.test(e.target.value), er = document.getElementById('su-err');
@@ -1466,11 +1949,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     // amount follows quantity x price until someone types in the amount box
     var pre = id === 'f-qty' || id === 'f-unit' ? 'f-' : (id === 'rn-qty' || id === 'rn-unit' ? 'rn-' : '');
     if (pre) {
-      var amt = document.getElementById(pre + 'amount');
-      if (amt && amt.getAttribute('data-manual') !== '1') {
-        var q = num($('#' + pre + 'qty').value), u = num($('#' + pre + 'unit').value);
-        if (q && u) amt.value = String(Math.round(q * u * 100) / 100);
-      }
+      recalcAmount(pre);
       if (pre === 'rn-') updateDelta();
     } else if (id === 'f-amount' || id === 'rn-amount') {
       e.target.setAttribute('data-manual', '1');
@@ -1485,6 +1964,10 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
 
   document.addEventListener('change', function (e) {
     var id = e.target.id;
+    if (id === 'pdfFile') { pdfPick(e.target.files && e.target.files[0]); e.target.value = ''; return; }
+    if (id === 'pdfAi') { pdf.ai = e.target.checked; return; }
+    if (id === 'f-auto') { e.target.setAttribute('data-touched', '1'); e.target.classList.remove('ai-filled'); }
+    if (e.target.name === 'st-provider') { settingsKeep = true; settingsProviderHints(); return; }
     if (id === 'f-noexp') {
       var endEl = $('#f-end');
       endEl.disabled = e.target.checked;
@@ -1505,6 +1988,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     else if (id === 'pinForm') submitPin();
     else if (id === 'contractForm') submitContract(e.target);
     else if (id === 'renewForm') submitRenew(e.target);
+    else if (id === 'settingsForm') saveSettings();
   });
 
   document.addEventListener('keydown', function (e) {
@@ -1522,6 +2006,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
   function route() {
     var h = location.hash.replace('#', '');
     ui.view = VIEWS.indexOf(h) >= 0 ? h : 'dashboard';
+    settingsKeep = false;
     render();
   }
   window.addEventListener('hashchange', route);
