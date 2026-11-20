@@ -9,7 +9,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
 <style>
-/* MA Contract Tracker: same look as Project & Jobs Tracker. Urgency colours are always paired with a text label. */
+/* MA Contract Tracker (full-screen): dark sidebar on the left (menu, quick views, account), full-width content on the right.
+   Urgency colours are always paired with a text label. */
 :root{
   --bg:#F2F4F9; --surface:#FFFFFF; --surface-2:#EDF0F6;
   --ink:#121A2B; --ink-2:#434D66; --ink-3:#5B6681; --line:#DCE1EB;
@@ -63,29 +64,6 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 .muted{color:var(--ink-3)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-/* top bar */
-.top{background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-.top-in{max-width:1120px;margin:0 auto;padding:10px 16px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px 24px}
-.brand{display:flex;gap:10px;align-items:center;min-width:0}
-.mark{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;flex:none}
-.brand-name{font-family:var(--font-display);font-weight:600;font-size:17px;line-height:1.2}
-.brand-sub{font-size:12px;color:var(--ink-3)}
-#nav{display:flex;gap:4px}
-#nav a{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9px;color:var(--ink-2);text-decoration:none;font-weight:500;white-space:nowrap}
-#nav a:hover{background:var(--surface-2)}
-#nav a[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
-.badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--bad-solid);color:#fff;font-size:11px;font-weight:600;display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
-.user{display:flex;align-items:center;gap:10px}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:600;font-family:var(--font-display)}
-.user-name{font-size:14px;font-weight:500;line-height:1.2}
-.user-role{font-size:12px;color:var(--ink-3)}
-#banner:not(:empty){background:var(--review-bg);color:var(--review);padding:8px 16px;text-align:center;font-size:14px}
-
-.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 80px}
-.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.page-head h1{font-size:24px}
-.page-head .sub{color:var(--ink-3);font-size:14px;margin-top:2px}
-.loading{padding:48px 0;text-align:center;color:var(--ink-3)}
 /* buttons and controls */
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);padding:8px 14px;border-radius:9px;font-weight:500;min-height:38px;line-height:1.2}
 .btn:hover{background:var(--surface-2)}
@@ -138,8 +116,6 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 #toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:10px;font-size:14px;z-index:60;box-shadow:0 8px 24px rgba(0,0,0,.3);opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
 
-.user-btn{display:flex;align-items:center;gap:10px;background:none;border:0;padding:3px 8px 3px 4px;border-radius:10px;text-align:left}
-.user-btn:hover{background:var(--surface-2)}
 .ulist{display:grid;gap:10px}
 .urow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
 .urow.off{opacity:.65}
@@ -162,14 +138,69 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 .lock h1{font-size:20px;margin-bottom:4px}
 .lock .sub{color:var(--ink-3);font-size:14px;margin-bottom:16px}
 .is-locked .user{display:none}
-@media (max-width:720px){
-  .top-in{grid-template-columns:1fr auto}
-  #nav{grid-column:1/-1;order:3;overflow-x:auto}
-  .brand-sub{display:none}
-  .user-name,.user-role{display:none}
-}
-@media (max-width:640px){.two{grid-template-columns:1fr}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* app shell: dark sidebar on the left, content uses the full width on the right */
+:root{--side-bg:#0F1C3F;--side-ink:#D5DDF3;--side-ink-2:#A9B6D8;--side-ink-3:#8FA1D0;--side-hover:rgba(255,255,255,.09);--side-w:248px;
+  --av0:#175CD3;--av1:#067647;--av2:#B54708;--av3:#5925DC;--av4:#C11574;--av5:#0E7090}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--side-bg:#0A1020;--av0:#8FB1FF;--av1:#6CE9A6;--av2:#FDB022;--av3:#B692F6;--av4:#F670C7;--av5:#67E3F9}}
+:root[data-theme="dark"]{--side-bg:#0A1020;--av0:#8FB1FF;--av1:#6CE9A6;--av2:#FDB022;--av3:#B692F6;--av4:#F670C7;--av5:#67E3F9}
+
+.app{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);min-height:100vh;align-items:start}
+.content{min-width:0}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side-bg);color:var(--side-ink);padding:22px 14px 16px;display:flex;flex-direction:column;gap:24px;z-index:20}
+.side :focus-visible{outline-color:#9DB8FF}
+.brand{display:flex;gap:12px;align-items:center;min-width:0;padding:0 6px}
+.mark{width:40px;height:40px;border-radius:11px;background:#2457D6;color:#fff;display:grid;place-items:center;flex:none}
+.brand-name{font-family:var(--font-display);font-weight:600;font-size:15px;line-height:1.25;color:var(--ink)}
+.brand-sub{font-size:11.5px;line-height:1.35;color:var(--ink-3);margin-top:2px}
+.side .brand-name{color:#fff}
+.side .brand-sub{color:var(--side-ink-2)}
+#nav{display:flex;flex-direction:column;gap:4px}
+#nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;color:var(--side-ink);text-decoration:none;font-weight:500;font-size:15px;white-space:nowrap}
+#nav a:hover{background:var(--side-hover)}
+#nav a[aria-current="page"]{background:#2457D6;color:#fff}
+#nav .nv-t{flex:1}
+.badge{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#D92D20;color:#fff;font-size:12px;font-weight:700;display:inline-grid;place-items:center;font-variant-numeric:tabular-nums}
+.quick{display:flex;flex-direction:column;gap:2px}
+.quick-h{padding:0 12px 8px;font-size:12px;font-weight:600;color:var(--side-ink-3)}
+.qv{display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border:0;border-radius:9px;background:transparent;color:var(--side-ink);font-size:14px;text-align:left}
+.qv:hover{background:var(--side-hover)}
+.qv[aria-current="true"]{background:var(--side-hover);color:#fff;font-weight:600}
+.qd{width:9px;height:9px;border-radius:50%;flex:none}
+.qv span:first-of-type{flex:1}
+.qn{margin-left:auto;color:var(--side-ink-2);font-variant-numeric:tabular-nums}
+.side-gap{flex:1}
+.user{display:flex;align-items:center;gap:4px;padding:10px;border-radius:12px;background:rgba(255,255,255,.07)}
+.user-btn{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:none;border:0;padding:2px;border-radius:10px;text-align:left;color:inherit}
+.user-btn:hover{background:var(--side-hover)}
+.user-txt{min-width:0}
+.avatar{width:36px;height:36px;border-radius:50%;background:#D1E9FF;color:#175CD3;display:grid;place-items:center;font-weight:700;font-family:var(--font-display);flex:none}
+.user-name{font-size:14px;font-weight:600;line-height:1.25;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-role{font-size:12px;color:var(--side-ink-2)}
+.user .icon-btn{width:40px;height:40px;color:var(--side-ink);flex:none}
+.user .icon-btn:hover{background:var(--side-hover);color:#fff}
+#banner:not(:empty){background:var(--review-bg);color:var(--review);padding:10px 24px;text-align:center;font-size:14px}
+.lock-brand{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.wrap{padding:28px 36px 64px}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:14px 24px;flex-wrap:wrap;margin-bottom:20px}
+.page-head h1{font-size:30px;font-weight:700}
+.page-head .sub{color:var(--ink-3);font-size:14.5px;margin-top:4px}
+.loading{padding:48px 0;text-align:center;color:var(--ink-3)}
+.is-locked .app{grid-template-columns:minmax(0,1fr)}
+.is-locked .side{display:none}
+.is-locked .wrap{min-height:100vh;display:grid;place-items:center;padding:24px 16px}
+.is-locked .lock{margin:0;width:100%}
+
+/* bigger, calmer controls and cards */
+.btn{min-height:42px;border-radius:11px;padding:0 18px}
+.alert .btn{min-height:32px;padding:4px 12px}
+input[type=text],input[type=search],input[type=date],input[type=password],select.f,textarea{border-radius:11px;min-height:44px}
+textarea{min-height:76px}
+.card{border-radius:16px;padding:20px 22px}
+.card-h h2{font-size:19px;font-weight:700}
+
+
 /* ---- MA Contract Tracker additions ---- */
 :root{
   --u-expired-fg:#9B1C1C; --u-expired-bg:#FBE0E0;
@@ -200,12 +231,10 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent)}
   --u-none-fg:#B0BAD2;    --u-none-bg:#232C44;
   --bar:#5B87F0; --bar-on:#9DB8FF; --grid:#28324C;
 }
-.wrap{max-width:1200px}
-.top-in{max-width:1200px}
-input[type=number],input[type=tel],input.num{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:9px;padding:9px 12px;min-height:40px;font-variant-numeric:tabular-nums}
+input[type=number],input[type=tel],input.num{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:11px;padding:9px 12px;min-height:44px;font-variant-numeric:tabular-nums}
 input:focus,select:focus,textarea:focus{border-color:var(--accent)}
 select.f{appearance:auto}
-.btn.sm{min-height:34px;padding:4px 12px}
+.btn.sm{min-height:34px;padding:4px 12px;white-space:nowrap}
 .btn.ghost-danger{color:var(--bad);border-color:var(--bad-bg);background:transparent}
 .btn.ghost-danger:hover{background:var(--bad-bg)}
 .link{background:none;border:0;padding:0;font:inherit;font-weight:600;color:var(--ink);text-align:left;cursor:pointer;overflow-wrap:anywhere}
@@ -221,33 +250,58 @@ select.f{appearance:auto}
 .b-long{color:var(--u-long-fg);background:var(--u-long-bg)}
 .b-none,.b-closed{color:var(--u-none-fg);background:var(--u-none-bg)}
 
-/* overview tiles */
-.tiles{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin-bottom:16px}
-.tile{padding:16px;display:block;color:inherit}
-.tile::before{content:none}
-.tile-top{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--ink-2);font-size:14px}
-.tile-ic{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}
-.tile-num{margin-top:10px}
-.tile-num small{font:400 14px var(--font-body);color:var(--ink-3)}
-.tile-val{margin-top:4px;font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums}
-.cols2{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
-.cols2>.main{flex:1.45 1 560px;min-width:0}
-.cols2>.side{flex:1 1 380px;min-width:0;display:grid;gap:16px}
-.card.flush{padding:0}
-.card-hd{padding:16px 18px 12px}
-.card-hd h2{font-size:17px}
-.card-hd p{font-size:13px;color:var(--ink-3);margin-top:2px}
-.prow2{display:flex;align-items:center;gap:8px 16px;flex-wrap:wrap;padding:11px 18px;border-top:1px solid var(--line)}
-.prow2 .when{flex:0 0 150px}
-.prow2 .what{flex:1 1 200px;min-width:0}
-.prow2 .what .t{font-weight:600;overflow-wrap:anywhere}
-.prow2 .what .s{font-size:12.5px;color:var(--ink-3)}
-.prow2 .end{flex:0 0 100px;text-align:right;font-variant-numeric:tabular-nums}
-.prow2 .end .s{font-size:12.5px;color:var(--ink-3)}
-.autochip{display:inline-block;margin-left:6px;padding:0 8px;border-radius:6px;background:var(--surface-2);color:var(--ink-2);font-size:12px;font-weight:500;vertical-align:1px;white-space:nowrap}
 
+/* ---- overview: urgency tiles ---- */
+.tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-bottom:16px}
+.tile{display:flex;flex-direction:column;gap:8px;text-align:left;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;box-shadow:var(--shadow);color:inherit}
+.tile::before{content:none}
+.tile:hover{border-color:var(--accent);background:var(--surface)}
+.tile-top{display:flex;align-items:center;gap:10px;font-weight:600;color:var(--ink-2);font-size:13.5px;line-height:1.3;min-height:38px}
+.tile-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none}
+.tile-ic svg{width:18px;height:18px}
+.tile-num{margin-top:4px;display:flex;align-items:baseline;gap:8px;font-family:var(--font-display);font-size:42px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.tile-num small{font:400 14px var(--font-body);color:var(--ink-3)}
+.tile.hot.k-expired .tile-num{color:var(--u-expired-fg)}
+.tile.hot.k-d30 .tile-num{color:var(--u-d30-fg)}
+.tile-val{font-size:13px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+
+/* distribution strip */
+.mix{margin-bottom:16px;padding:18px 22px}
+.mix-h{display:flex;align-items:baseline;justify-content:space-between;gap:6px 16px;flex-wrap:wrap}
+.mix-h h2{font-size:17px;font-weight:700}
+.mix-h p{font-size:13.5px;color:var(--ink-3)}
+.mixbar{display:flex;gap:3px;height:14px;margin:12px 0 12px}
+.mixbar i{display:block;min-width:5px;background:var(--mc)}
+.mixbar i:first-child{border-radius:7px 0 0 7px}
+.mixbar i:last-child{border-radius:0 7px 7px 0}
+.mixbar i:only-child{border-radius:7px}
+.mixleg{display:flex;flex-wrap:wrap;gap:4px 8px}
+.mixleg button{display:inline-flex;align-items:center;gap:7px;border:0;background:transparent;border-radius:8px;padding:4px 8px;font-size:13.5px;color:var(--ink-2)}
+.mixleg button:hover{background:var(--surface-2);color:var(--ink)}
+.mixleg i{width:10px;height:10px;border-radius:3px;background:var(--mc);flex:none}
+.mixleg b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.m-expired{--mc:var(--u-expired-fg)}.m-d30{--mc:var(--u-d30-fg)}.m-d90{--mc:var(--u-d90-fg)}.m-d365{--mc:var(--u-d365-fg)}.m-long{--mc:var(--u-long-fg)}.m-other{--mc:var(--ink-3)}
+
+.cols2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+.cols2>.col-a,.cols2>.col-b{min-width:0}
+.cols2>.col-b{display:grid;gap:16px}
+.card.flush{padding:0}
+.card-hd{padding:18px 22px 12px}
+.card-hd h2{font-size:18px;font-weight:700}
+.card-hd p{font-size:13.5px;color:var(--ink-3);margin-top:2px}
+.card-hd .card-h{margin:0;align-items:flex-start}
+.prow2{display:grid;grid-template-columns:128px minmax(0,1fr) 92px auto;grid-template-areas:"when what end btn";align-items:center;gap:8px 16px;padding:13px 22px;border-top:1px solid var(--line)}
+.prow2:hover{background:var(--surface-2)}
+.prow2 .when{grid-area:when}
+.prow2 .what{grid-area:what;min-width:0}
+.prow2 .what .t{font-weight:600;overflow-wrap:anywhere}
+.prow2 .what .s{font-size:13px;color:var(--ink-3);overflow-wrap:anywhere}
+.prow2 .end{grid-area:end;text-align:right;font-variant-numeric:tabular-nums}
+.prow2 .end .s{font-size:13px;color:var(--ink-3)}
+.prow2>.btn{grid-area:btn}
+.autochip{display:inline-block;margin-left:6px;padding:0 8px;border-radius:6px;background:var(--surface-2);color:var(--ink-2);font-size:12px;font-weight:500;vertical-align:1px;white-space:nowrap}
 /* month chart */
-.mchart{display:flex;gap:8px;padding:0 18px}
+.mchart{display:flex;gap:8px;padding:0 22px}
 .my{width:20px;height:150px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;font-size:11.5px;color:var(--ink-3);line-height:1;font-variant-numeric:tabular-nums}
 .mplot{position:relative;flex:1;min-width:0}
 .mgrid{position:relative;height:150px;border-bottom:1px solid var(--line)}
@@ -261,30 +315,38 @@ select.f{appearance:auto}
 .mx{display:flex;gap:4px;margin-top:6px}
 .mx span{flex:1 1 0;min-width:0;text-align:center;font-size:11px;line-height:1.25;color:var(--ink-3)}
 .mx em{display:block;font-style:normal;font-size:10.5px}
-.mdetail{margin:12px 18px 0;padding:10px 14px;border-radius:10px;background:var(--bg);min-height:64px}
+.mdetail{margin:12px 22px 0;padding:10px 14px;border-radius:10px;background:var(--bg);min-height:64px}
 .mdetail b{font-weight:600}
 .mdetail .s{font-size:12.5px;color:var(--ink-2);margin-top:2px;overflow-wrap:anywhere}
-.mfoot{margin:10px 18px 16px;font-size:12px;color:var(--ink-3)}
+.mfoot{margin:10px 22px 18px;font-size:12px;color:var(--ink-3)}
 
 /* clean-up panel */
-.fixrow{display:flex;gap:12px;align-items:flex-start;padding:12px 18px;border-top:1px solid var(--line)}
+.fixrow{display:flex;gap:12px;align-items:flex-start;padding:12px 22px;border-top:1px solid var(--line)}
 .fix-ic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--u-d90-bg);color:var(--u-d90-fg)}
 .fixrow b{font-weight:600}
 .fixrow .s{font-size:12.5px;color:var(--ink-2);overflow-wrap:anywhere}
 .fixrow .btn{margin-top:6px}
-.allgood{display:flex;gap:10px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);color:var(--u-long-fg);font-weight:500}
+.allgood{display:flex;gap:10px;align-items:center;padding:14px 22px;border-top:1px solid var(--line);color:var(--u-long-fg);font-weight:500}
 
-/* contract list */
-.toolbar2{display:grid;gap:12px;margin-bottom:16px}
-.search{position:relative;max-width:480px}
-.search svg{position:absolute;left:12px;top:12px;color:var(--ink-3)}
-.search input{padding-left:38px}
+
+/* ---- contract list ---- */
+.toolbar2{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-bottom:16px}
+.search{position:relative;flex:0 1 340px;min-width:220px}
+.search svg{position:absolute;left:14px;top:14px;color:var(--ink-3);pointer-events:none}
+.search input{padding-left:40px}
+.toolbar2 .chips{margin:0;flex:1 1 auto}
+.fchip{min-height:36px;padding:4px 12px;font-size:13.5px}
+.toolbar2 .chips{gap:6px}
 .fchip .n{font-size:12.5px;min-width:22px;text-align:center;padding:0 6px;border-radius:999px;background:var(--surface-2);color:var(--ink-2);opacity:1}
 .fchip[aria-pressed="true"] .n{background:var(--surface);color:var(--accent)}
-.ctable{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden}
-.crow{display:grid;grid-template-columns:128px minmax(190px,1fr) 140px 150px 92px 84px 176px;gap:10px;align-items:center;padding:9px 16px;border-top:1px solid var(--line);min-height:62px}
-.chead{background:var(--surface-2);border-top:0;font-size:12.5px;font-weight:600;color:var(--ink-2);min-height:0;padding:10px 16px}
-.crow .sub{font-size:12.5px;color:var(--ink-3);overflow-wrap:anywhere}
+.ctable{container-type:inline-size;container-name:ct;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
+.crow{display:grid;grid-template-columns:124px minmax(220px,1.7fr) minmax(120px,1fr) 150px 96px 100px 168px;gap:10px;align-items:center;padding:10px 18px;border-top:1px solid var(--line);min-height:64px}
+.crow:not(.chead):hover{background:var(--surface-2)}
+.crow.r-expired{box-shadow:inset 3px 0 0 var(--u-expired-fg)}
+.crow.r-d30{box-shadow:inset 3px 0 0 var(--u-d30-fg)}
+.chead{background:var(--surface-2);border-top:0;font-size:12.5px;font-weight:600;color:var(--ink-2);min-height:0;padding:11px 18px}
+.crow .sub{font-size:13px;color:var(--ink-3);overflow-wrap:anywhere}
+.crow .sub-sup{display:none}
 .crow .c-sup{font-size:13.5px;color:var(--ink-2);overflow-wrap:anywhere}
 .crow .c-per{font-size:13px;font-variant-numeric:tabular-nums}
 .crow .c-per .warn{font-size:12px;font-weight:500;color:var(--u-d90-fg)}
@@ -292,14 +354,48 @@ select.f{appearance:auto}
 .crow .c-rem.late{color:var(--u-expired-fg)}
 .crow .c-amt{text-align:right;font-variant-numeric:tabular-nums}
 .crow .c-act{display:flex;justify-content:flex-end;align-items:center;gap:6px}
-.crow .mlab{display:none}
-.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2)}
 .pager .pg{display:flex;gap:6px;align-items:center}
-.pgbtn{min-width:38px;min-height:38px;padding:0 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface);font-weight:600}
+.pgbtn{min-width:38px;min-height:38px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);font-weight:600}
 .pgbtn:hover{background:var(--surface-2)}
 .pgbtn[aria-current="page"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
 .pgbtn[disabled]{opacity:.5;cursor:default}
+.ctable .empty{padding:36px 8px}
 
+/* medium width: the supplier moves under the title */
+@container ct (max-width:1090px){
+  .crow{grid-template-columns:116px minmax(220px,1fr) 146px 92px 96px 168px}
+  .chead>div:nth-child(3){display:none}
+  .crow .c-sup{display:none}
+  .crow .sub-sup{display:inline}
+}
+/* compact: two lines per row */
+@container ct (max-width:940px){
+  .chead{display:none}
+  .crow{grid-template-columns:170px 90px minmax(0,1fr) auto;grid-template-areas:"main main main stat" "per rem amt act";gap:8px 12px;padding:12px 16px}
+  .crow .c-status{grid-area:stat;justify-self:end}
+  .crow .c-main{grid-area:main}
+  .crow .c-sup{display:none}
+  .crow .sub-sup{display:inline}
+  .crow .c-per{grid-area:per}
+  .crow .c-rem{grid-area:rem}
+  .crow .c-amt{grid-area:amt;text-align:right}
+  .crow .c-act{grid-area:act}
+}
+/* narrow: each row becomes a small card */
+@container ct (max-width:600px){
+  .crow{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main stat" "sup sup" "per rem" "amt act";gap:6px 12px;padding:14px 16px}
+  .crow .c-sup{display:block;grid-area:sup}
+  .crow .sub-sup{display:none}
+  .crow .c-rem{justify-self:end}
+  .crow .c-amt{text-align:left}
+}
+
+/* users */
+.ulist{display:grid;grid-template-columns:repeat(auto-fill,minmax(400px,1fr));gap:12px}
+.urow{padding:16px 18px;border-radius:16px}
+.urow .avatar{width:44px;height:44px}
+.note-card{margin-bottom:16px}
 /* detail / renew / edit modals */
 .panel.wide{width:min(880px,100%)}
 .panel.mid{width:min(680px,100%)}
@@ -322,26 +418,43 @@ select.f{appearance:auto}
 .row-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;margin-top:14px}
 .spread{justify-content:space-between}
 
-@media (max-width:1100px){
+@media (max-width:1360px){
+  .cols2{grid-template-columns:minmax(0,1fr)}
+  .cols2>.col-b{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+}
+@media (max-width:1180px){
   .tiles{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .chead{display:none}
-  .crow{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"main stat" "sup sup" "per rem" "amt act";gap:6px 12px;padding:12px 14px}
-  .crow .c-status{grid-area:stat;justify-self:end}
-  .crow .c-main{grid-area:main}
-  .crow .c-sup{grid-area:sup}
-  .crow .c-per{grid-area:per}
-  .crow .c-rem{grid-area:rem;justify-self:end}
-  .crow .c-amt{grid-area:amt;text-align:left}
-  .crow .c-act{grid-area:act}
+}
+@media (max-width:900px){
+  .app{display:block}
+  .side{position:sticky;top:0;height:auto;overflow:visible;flex-direction:row;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px}
+  .brand{padding:0}
+  .mark{width:34px;height:34px}
+  .brand-sub,.quick,.side-gap{display:none}
+  #nav{order:3;flex:1 0 100%;flex-direction:row;overflow-x:auto;gap:4px}
+  #nav a{padding:8px 12px;font-size:14px;gap:8px}
+  .user{margin-left:auto;padding:2px 4px;background:transparent}
+  .user-txt{display:none}
+  .wrap{padding:16px 14px 64px}
+  .page-head h1{font-size:24px}
+  .ulist{grid-template-columns:minmax(0,1fr)}
+  .search{flex:1 1 100%}
+  .cols2>.col-b{grid-template-columns:minmax(0,1fr)}
 }
 @media (max-width:720px){
-  .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .tile{padding:14px}
+  .tile-num{font-size:34px}
   .three{grid-template-columns:1fr}
   .dl{grid-template-columns:104px minmax(0,1fr)}
-  .prow2 .when{flex-basis:100%}
-  .prow2 .end{text-align:left;flex-basis:auto}
+  .prow2{padding:12px 16px;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"when btn" "what end"}
+  .card{padding:16px}
+  .card-hd{padding:16px 16px 10px}
+  .mix{padding:16px}
 }
-@media print{.top,#toast,#modal{display:none}}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.side,#toast,#modal{display:none}.app{display:block}}
 
 input.code{text-transform:uppercase;letter-spacing:.14em;font-weight:600}
 input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:400}
@@ -349,11 +462,11 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="top-in">
+<div class="app">
+  <aside class="side" aria-label="เมนูด้านข้าง">
     <div class="brand">
       <span class="mark" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="m9 14.5 2 2 4-4.5"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="m9 14.5 2 2 4-4.5"/></svg>
       </span>
       <div>
         <div class="brand-name">MA Contract Tracker</div>
@@ -361,11 +474,15 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
       </div>
     </div>
     <nav id="nav" aria-label="เมนูหลัก"></nav>
+    <div class="quick" id="quick"></div>
+    <div class="side-gap"></div>
     <div class="user" id="userBox"></div>
+  </aside>
+  <div class="content">
+    <div id="banner" role="status"></div>
+    <main class="wrap" id="main"><p class="loading">กำลังโหลดข้อมูล…</p></main>
   </div>
-</header>
-<div id="banner" role="status"></div>
-<main class="wrap" id="main"><p class="loading">กำลังโหลดข้อมูล…</p></main>
+</div>
 <div id="modal"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 
@@ -408,6 +525,19 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     ['d365', '91–365 วัน', ICON.cal],
     ['long', 'มากกว่า 365 วัน', ICON.check]
   ];
+
+  function svgI(d, size, sw) {
+    return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (sw || 1.9) + '" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>';
+  }
+  var NAVICON = {
+    dashboard: 'M3 3h7v9H3z M14 3h7v5h-7z M14 12h7v9h-7z M3 16h7v5H3z',
+    contracts: 'M6 3h8l4 4v14H6z M14 3v4h4 M9 13h6 M9 17h6',
+    users: 'M16 20v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1 M9.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M21 20v-1a4 4 0 0 0-3-3.9 M16 4.1a3.5 3.5 0 0 1 0 6.8'
+  };
+  var MARK = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/><path d="m9 14.5 2 2 4-4.5"/></svg>';
+  function lockBrand() {
+    return '<div class="lock-brand"><span class="mark" aria-hidden="true">' + MARK + '</span><div><div class="brand-name">MA Contract Tracker</div><div class="brand-sub">ระบบติดตามการต่อสัญญา MA</div></div></div>';
+  }
 
   /* ---------- state ---------- */
   var API_URL = 'https://script.google.com/macros/s/AKfycbx5mdGTTU5TR5jwcz9NmCphUtsZ4k-QiJVpnTUEAgHKqFPG5xb1GH83LijyjMnqupPz/exec'; // Google Apps Script web app address (ends with /exec)
@@ -681,7 +811,24 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     if (isAdmin()) items.push(['users', 'ผู้ใช้']);
     $('#nav').innerHTML = items.map(function (it) {
       var badge = it[0] === 'contracts' && urgent ? '<span class="badge" title="หมดอายุแล้วหรือครบใน 30 วัน">' + urgent + '</span>' : '';
-      return '<a href="#' + it[0] + '"' + (ui.view === it[0] ? ' aria-current="page"' : '') + '>' + it[1] + badge + '</a>';
+      return '<a href="#' + it[0] + '"' + (ui.view === it[0] ? ' aria-current="page"' : '') + '>' + svgI(NAVICON[it[0]], 20, 1.9) + '<span class="nv-t">' + it[1] + '</span>' + badge + '</a>';
+    }).join('');
+  }
+  function renderQuick() {
+    var q = $('#quick');
+    if (!q) return;
+    if (auth !== 'ok') { q.innerHTML = ''; return; }
+    var items = [
+      ['expired', 'หมดอายุแล้ว', '#F97066'],
+      ['d30', 'ด่วน ≤ 30 วัน', '#FB923C'],
+      ['d90', 'ใกล้หมด 31–90 วัน', '#FDB022'],
+      ['other', 'ปิดแล้ว / ไม่มีวันหมด', '#98A2B3']
+    ];
+    q.innerHTML = '<div class="quick-h">มุมมองด่วน</div>' + items.map(function (it) {
+      var n = contracts.filter(function (c) { return inFilter(c, it[0]); }).length;
+      var on = ui.view === 'contracts' && ui.f === it[0] && !ui.q.trim();
+      return '<button type="button" class="qv" data-action="go-filter" data-f="' + it[0] + '"' + (on ? ' aria-current="true"' : '') + '>' +
+        '<i class="qd" style="background:' + it[2] + '"></i><span>' + it[1] + '</span><span class="qn">' + n + '</span></button>';
     }).join('');
   }
   function renderBanner() {
@@ -696,12 +843,12 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     if (auth !== 'ok' || !me) { box.innerHTML = ''; return; }
     box.innerHTML = '<button type="button" class="user-btn" data-action="account" aria-label="บัญชีของฉัน" title="บัญชีของฉัน">' +
       '<span class="avatar" aria-hidden="true">' + esc(String(me.name || '?').trim().charAt(0).toUpperCase()) + '</span>' +
-      '<div><div class="user-name">' + esc(me.name) + '</div><div class="user-role">' + (isAdmin() ? 'Admin' : 'สมาชิก') + '</div></div></button>' +
+      '<div class="user-txt"><div class="user-name">' + esc(me.name) + '</div><div class="user-role">' + (isAdmin() ? 'Admin' : 'สมาชิก') + '</div></div></button>' +
       '<button type="button" class="icon-btn" data-action="logout" aria-label="ออกจากระบบ" title="ออกจากระบบ">' + ICON.out + '</button>';
   }
 
   function loginHTML() {
-    return '<div class="card lock"><h1>เข้าสู่ระบบ</h1><p class="sub">ใส่ชื่อผู้ใช้และ PIN ของคุณ</p>' +
+    return '<div class="card lock">' + lockBrand() + '<h1>เข้าสู่ระบบ</h1><p class="sub">ใส่ชื่อผู้ใช้และ PIN ของคุณ</p>' +
       '<form id="loginForm" novalidate>' +
       '<div class="field"><label for="lg-user">ชื่อผู้ใช้</label><input type="text" id="lg-user" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="40" value="' + esc(readUserHint()) + '"></div>' +
       '<div class="field"><label for="lg-pin">PIN</label><input type="password" id="lg-pin" autocomplete="current-password" maxlength="64"></div>' +
@@ -709,7 +856,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
       '<div class="actions"><button type="submit" class="btn primary" id="lg-btn">เข้าสู่ระบบ</button></div></form></div>';
   }
   function setupHTML() {
-    return '<div class="card lock wide"><h1>ตั้งค่าครั้งแรก</h1>' +
+    return '<div class="card lock wide">' + lockBrand() + '<h1>ตั้งค่าครั้งแรก</h1>' +
       '<p class="sub">สร้างบัญชีผู้ดูแลระบบ (Admin) ของคุณ แล้วค่อยเพิ่มผู้ใช้คนอื่นได้ในเมนู "ผู้ใช้"</p>' +
       '<form id="setupForm" novalidate>' +
       '<div class="field"><label for="su-key">รหัสตั้งค่า</label><input type="text" id="su-key" class="code" name="setup-code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="64" data-lpignore="true" data-1p-ignore="true" placeholder="เช่น AB12CD"><div class="hint" id="su-keyhint">รหัสใช้ครั้งเดียวสำหรับสร้างบัญชีแรก (ที่ได้รับตอนส่งมอบระบบ) พิมพ์เป็นภาษาอังกฤษ ตัวพิมพ์เล็กหรือใหญ่ก็ได้</div></div>' +
@@ -740,7 +887,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     var se = kid ? keep.selectionEnd : null;
 
     if (ui.view === 'users' && auth === 'ok' && !isAdmin()) ui.view = 'dashboard';
-    renderNav(); renderUser(); renderBanner();
+    renderNav(); renderUser(); renderQuick(); renderBanner();
     document.body.classList.toggle('is-locked', auth !== 'ok');
     var keepForm = (auth === 'login' && document.getElementById('loginForm')) || (auth === 'setup' && document.getElementById('setupForm'));
     if (!keepForm || syncError) {
@@ -787,11 +934,24 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     }
 
     var tiles = '<div class="tiles">' + TILES.map(function (x) {
-      return '<button type="button" class="tile" data-action="go-filter" data-f="' + x[0] + '">' +
+      var hot = (x[0] === 'expired' || x[0] === 'd30') && t[x[0]].n ? ' hot' : '';
+      return '<button type="button" class="tile k-' + x[0] + hot + '" data-action="go-filter" data-f="' + x[0] + '">' +
         '<div class="tile-top"><span class="tile-ic b-' + x[0] + '">' + x[2] + '</span>' + x[1] + '</div>' +
         '<div class="tile-num">' + t[x[0]].n + ' <small>รายการ</small></div>' +
         '<div class="tile-val">มูลค่า ' + money(t[x[0]].v) + '</div></button>';
     }).join('') + '</div>';
+
+    // one strip showing how the whole list splits by urgency
+    var mixItems = TILES.map(function (x) { return [x[0], x[1].replace('ด่วน ภายใน 30 วัน', 'ด่วน ≤ 30 วัน'), t[x[0]].n]; });
+    var otherN = contracts.filter(function (c) { return inFilter(c, 'other'); }).length;
+    mixItems.push(['other', 'ปิดแล้ว / ไม่มีวันหมด', otherN]);
+    var mix = '<section class="card mix" aria-labelledby="mix-h"><div class="mix-h"><h2 id="mix-h">สัดส่วนสัญญาทั้งหมด</h2><p>' + contracts.length + ' รายการ · กดที่หัวข้อเพื่อดูรายการ</p></div>' +
+      '<div class="mixbar" aria-hidden="true">' + mixItems.filter(function (m) { return m[2] > 0; }).map(function (m) {
+        return '<i class="m-' + m[0] + '" style="flex:' + m[2] + ' 1 0" title="' + esc(m[1]) + ' ' + m[2] + ' รายการ"></i>';
+      }).join('') + '</div>' +
+      '<div class="mixleg">' + mixItems.map(function (m) {
+        return '<button type="button" class="m-' + m[0] + '" data-action="go-filter" data-f="' + m[0] + '"><i></i>' + esc(m[1]) + ' <b>' + m[2] + '</b></button>';
+      }).join('') + '</div></section>';
 
     // priority list: expired within a year, or due within 90 days
     var pri = contracts.filter(function (c) {
@@ -852,7 +1012,7 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
           '<button type="button" class="btn sm" data-action="go-filter" data-f="' + x.f + '">ดูรายการ</button></div></div>';
       }).join('') : '<div class="allgood">' + ICON.check + 'ไม่พบข้อมูลที่ต้องเคลียร์</div>') + '</section>';
 
-    return head + tiles + '<div class="cols2"><div class="main">' + priCard + '</div><div class="side">' + chart + fix + '</div></div>';
+    return head + tiles + mix + '<div class="cols2"><div class="col-a">' + priCard + '</div><div class="col-b">' + chart + fix + '</div></div>';
   }
 
   /* ---------- contract list ---------- */
@@ -878,10 +1038,10 @@ input.code::placeholder{text-transform:none;letter-spacing:normal;font-weight:40
     var rows = slice.map(function (c) {
       var b = bucketOf(c);
       var warn = c.status === 'Active' && !c.end && c.noExpiry !== 'yes' ? '<div class="warn">ยังไม่มีวันหมดอายุ</div>' : '';
-      return '<div class="crow" role="row">' +
+      return '<div class="crow r-' + b + '" role="row">' +
         '<div class="c-status" role="cell"><span class="ub b-' + b + '">' + BUCKET[b] + '</span></div>' +
         '<div class="c-main" role="cell"><button type="button" class="link" data-action="view" data-id="' + esc(c.id) + '">' + esc(c.title) + '</button>' +
-          '<div class="sub">' + esc(c.groupName || '—') + (c.auto === 'yes' ? '<span class="autochip">ต่ออัตโนมัติ</span>' : '') + '</div></div>' +
+          '<div class="sub">' + esc(c.groupName || '—') + (c.supplier ? '<span class="sub-sup"> · ' + esc(c.supplier) + '</span>' : '') + (c.auto === 'yes' ? '<span class="autochip">ต่ออัตโนมัติ</span>' : '') + '</div></div>' +
         '<div class="c-sup" role="cell">' + esc(c.supplier || '—') + '</div>' +
         '<div class="c-per" role="cell"><div>' + esc(periodText(c)) + '</div>' + warn + '</div>' +
         '<div class="c-rem' + (b === 'expired' ? ' late' : '') + '" role="cell">' + esc(remainText(c)) + '</div>' +
